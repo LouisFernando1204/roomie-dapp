@@ -2,25 +2,102 @@
 import React, { useEffect, useState, Suspense } from "react";
 
 const RoomList = () => {
-  const [errorMessage, setErrorMessage] = useState(null); // Define errorMessage to avoid undefined error
+    const [errorMessage, setErrorMessage] = useState(null); // Define errorMessage to avoid undefined error
 
-  const dummyData = {
-    ICP_UserBalance: 100,
-    propertyAuctionCards: [
-      { address: "Bikini Bottom No. 42, Los Angeles", propertyType: "House", startingBid: 5, startBid_Date: "2024-05-05", endBit_Date: "2024-05-19", image: "https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/380dbd01-38ee-4146-93df-31ce051f4b83/dfodfos-503fd0f7-8823-4c7d-ab84-753ed00e5e93.png/v1/fill/w_847,h_943,q_70,strp/_sbsp__the_chum_bucket_by_spongedrew250_dfodfos-pre.jpg?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7InBhdGgiOiJcL2ZcLzM4MGRiZDAxLTM4ZWUtNDE0Ni05M2RmLTMxY2UwNTFmNGI4M1wvZGZvZGZvcy01MDNmZDBmNy04ODIzLTRjN2QtYWI4NC03NTNlZDAwZTVlOTMucG5nIiwiaGVpZ2h0IjoiPD0yMTM2Iiwid2lkdGgiOiI8PTE5MjAifV1dLCJhdWQiOlsidXJuOnNlcnZpY2U6aW1hZ2Uud2F0ZXJtYXJrIl0sIndtayI6eyJwYXRoIjoiXC93bVwvMzgwZGJkMDEtMzhlZS00MTQ2LTkzZGYtMzFjZTA1MWY0YjgzXC9zcG9uZ2VkcmV3MjUwLTQucG5nIiwib3BhY2l0eSI6OTUsInByb3BvcnRpb25zIjowLjQ1LCJncmF2aXR5IjoiY2VudGVyIn19.qGf1PFS1m4MBgmH9wnHwcHWB0mKU9dKMLCZxEzkRw5c", area: 240 },
-      { address: "International House II, 45 Jurye-ro", propertyType: "Student Dormitory", startingBid: 25, startBid_Date: "2024-05-8", endBit_Date: "2024-05-22", image: "https://i.namu.wiki/i/qW2jMif6OYol0suRznfNCRWwxxoPJkfz26RP2CFBytbiDxXfXzVljtawQnSUfSVAvbUjiRW6hKWvASvIR7QPRg.webp", area: 2000 },
-      { address: "Jl. HR Muhammad No. 25, Pradahkalikendal", propertyType: "Surga Dunia", startingBid: 200, startBid_Date: "2024-10-16", endBit_Date: "2024-10-30", image: "https://imgcdn.espos.id/@espos/images/2022/10/gacoan.jpg", area: 1250 },
-      { address: "Jl. Gajahmada No.107, Miroto, Semarang", propertyType: "Restaurant", startingBid: 175, startBid_Date: "2024-05-8", endBit_Date: "2024-05-22", image: "https://indonesiatraveler.id/wp-content/uploads/2020/03/Lunpia-Cik-Me-Me3.jpg", area: 1089 },
-    ],
-  };
+    const dummyData = {
+        roomListRows: [
+            { roomType: 'Jomblo', tokenID: 1, total: 30, available: 24, occupied: 6, bedType: 'Single', maxPeople: 1, originalPrice: 1000, facilities: ['Free wifi', 'yang sabar ya bro'], image: ['public\images\hotel_pic.jpg'] },
+            { roomType: 'Double', tokenID: 2, total: 30, available: 20, occupied: 10, bedType: 'Queen', maxPeople: 2, originalPrice: 2000, facilities: ['yah standar aja lah bro'], image: ['public\images\hotel_pic.jpg', 'public\images\hotel_pic.jpg'] },
+            { roomType: 'Twin', tokenID: 3, total: 30, available: 24, occupied: 6, bedType: 'Twin', maxPeople: 2, originalPrice: 2500, facilities: ['no joren allowed', 'kita pisahan kasur'], image: ['public\images\hotel_pic.jpg'] },
+            { roomType: 'Suite', tokenID: 4, total: 30, available: 24, occupied: 6, bedType: 'Kasur Emas', maxPeople: 10, originalPrice: 30000, facilities: ['Free Breakfast', 'Kitchenette', 'Free Dinner', 'Free Laundry'], image: ['public\images\hotel_pic.jpg'] },
 
-  return (
-    <div>
-        
+        ],
+    };
 
-               
-    </div>
-  );
+    return (
+        <div>
+            <div className="mb-8">
+                <h1 className="text-3xl font-semibold text-darkOrange">Your Room List</h1>
+                <p className="text-sm text-gray-500">Hotel Termewah di Tata Surya</p>
+            </div>
+
+            <div className="relative overflow-x-auto shadow-md sm:rounded-lg bg-brightYellow">
+                <table className="w-full text-sm text-left rtl:text-right text-darkOrange">
+                    <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <tr>
+                            <th scope="col" className="px-6 py-3">
+                                Room type
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Token ID
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Total
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Available
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Occupied
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Bed Type
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Max People
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Price (ETH) 
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                Facilities
+                            </th>
+                            <th scope="col" className="px-6 py-3">
+                                <span className="sr-only">Mint</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {dummyData.roomListRows.map((room, index) => (
+                            <tr key={index} className="bg-white border-b border-gray-200 hover:bg-gray-50">
+                                <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                    {room.roomType}
+                                </th>
+                                <td className="px-6 py-4">
+                                    {room.tokenID}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {room.total}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {room.available}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {room.occupied}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {room.bedType}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {room.maxPeople}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {room.originalPrice}
+                                </td>
+                                <td className="px-6 py-4">
+                                    {room.facilities.join(', ')}
+                                </td>
+                                <td className="px-6 py-4 text-right">
+                                    <a href="#" className="font-medium text-complementary hover:underline">Mint</a>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    );
 };
 
 export default RoomList
