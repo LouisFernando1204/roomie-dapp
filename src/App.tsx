@@ -5,6 +5,8 @@ import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
+import { LodgeProfile } from "./views/LodgeProfile";
+import { PinataSDK } from "pinata-web3"
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -17,6 +19,11 @@ const metadata = {
   url: "http://127.0.0.1:5173",
   icons: ["https://avatars.roomie.com/"],
 };
+
+export const pinata = new PinataSDK({
+  pinataJwt: `${import.meta.env.VITE_PINATA_JWT}`,
+  pinataGateway: `${import.meta.env.VITE_GATEWAY_URL}`
+})
 
 createAppKit({
   adapters: [new EthersAdapter()],
@@ -34,7 +41,7 @@ function App() {
   useEffect(() => {}, [isUser, isConnected]);
 
   return (
-    <div className="mx-12">
+    <div className="mx-12 font-poppins">
       <Navbar
         connectedAddress={address}
         setIsUser={setIsUser}
@@ -42,7 +49,7 @@ function App() {
         handleConnect={open}
       />
       <Routes>
-        <Route path="/" />
+        <Route path="/lodge_profile" element={<LodgeProfile connectedAccount={ address } /> } />
       </Routes>
       <Footer isUser={isUser} setIsUser={setIsUser} />
     </div>
