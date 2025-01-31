@@ -5,8 +5,12 @@ import { Route, Routes } from "react-router-dom";
 import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
-import { LodgeProfile } from "./views/LodgeProfile";
-import { PinataSDK } from "pinata-web3"
+
+import Home from "./views/Home"
+import RoomList from "./views/RoomListView"
+import OrderList from "./views/OrderListView"
+
+import "flowbite";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -38,19 +42,25 @@ function App() {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
 
-  useEffect(() => {}, [isUser, isConnected]);
+  useEffect(() => { }, [isUser, isConnected]);
 
   return (
-    <div className="mx-12 font-poppins">
+    <div className="mx-12 font-lato">
       <Navbar
         connectedAddress={address}
         setIsUser={setIsUser}
         isUser={isUser}
         handleConnect={open}
       />
-      <Routes>
-        <Route path="/lodge_profile" element={<LodgeProfile connectedAccount={ address } /> } />
-      </Routes>
+
+      {/* Sesuaikan nama / path dgn yang di utils/list.ts */}
+      <div className="mt-32">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/room" element={<RoomList />} />
+          <Route path="/order" element={<OrderList />} />
+        </Routes>
+      </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />
     </div>
   );
