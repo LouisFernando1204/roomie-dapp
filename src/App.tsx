@@ -1,7 +1,7 @@
 import { createAppKit, useAppKit, useAppKitAccount } from "@reown/appkit/react";
 import { EthersAdapter } from "@reown/appkit-adapter-ethers";
 import { AppKitNetwork, holesky } from "@reown/appkit/networks";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
@@ -35,11 +35,19 @@ createAppKit({
 
 function App() {
   const [isUser, setIsUser] = useState(true);
+  const navigate = useNavigate();
 
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
 
-  useEffect(() => {}, [isUser, isConnected]);
+  useEffect(() => {
+    if (isUser) {
+      navigate("/")
+    }
+    else {
+      navigate("/room")
+    }
+  }, [isUser, isConnected]);
 
   return (
     <div className="lg:mx-12 font-poppins">
