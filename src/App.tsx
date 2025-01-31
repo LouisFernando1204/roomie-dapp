@@ -6,6 +6,12 @@ import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
 
+import Home from "./views/Home"
+import RoomList from "./views/RoomListView"
+import OrderList from "./views/OrderListView"
+
+import "flowbite";
+
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
 const networks: [AppKitNetwork] = [holesky];
@@ -31,19 +37,25 @@ function App() {
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
 
-  useEffect(() => {}, [isUser, isConnected]);
+  useEffect(() => { }, [isUser, isConnected]);
 
   return (
-    <div className="mx-12">
+    <div className="mx-12 font-lato">
       <Navbar
         connectedAddress={address}
         setIsUser={setIsUser}
         isUser={isUser}
         handleConnect={open}
       />
-      <Routes>
-        <Route path="/" />
-      </Routes>
+
+      {/* Sesuaikan nama / path dgn yang di utils/list.ts */}
+      <div className="mt-32">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/room" element={<RoomList />} />
+          <Route path="/order" element={<OrderList />} />
+        </Routes>
+      </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />
     </div>
   );
