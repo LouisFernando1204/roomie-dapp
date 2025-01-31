@@ -20,7 +20,7 @@ const Navbar: React.FC<NavbarProps> = ({
 }) => {
   return (
     <div className="max-w-screen text-primary mt-4 mb-12">
-      <div className="flex items-center justify-between px-6 py-6 md:py-4">
+      <div className="flex items-center justify-between py-6 px-8 md:py-4">
         {/* Logo */}
         <a href="/" className="flex items-center">
           <span className="hidden md:block text-2xl font-bold">Roomie</span>

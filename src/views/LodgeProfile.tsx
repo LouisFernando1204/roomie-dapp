@@ -147,12 +147,11 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
                         </svg>
                       </label>
 
-                      {/* Input file dengan posisi absolute dan z-index tinggi */}
                       <input
                         id="upload_cover"
                         type="file"
                         className="absolute inset-0 opacity-0 cursor-pointer z-10"
-                        onChange={coverHandler} // Fungsi untuk menangani file yang diupload
+                        onChange={coverHandler}
                         accept="image/jpeg, image/png"
                       />
                     </div>
