@@ -9,6 +9,7 @@ import { Footer } from "./components/fixed/Footer";
 import Home from "./views/Home"
 import RoomList from "./views/RoomListView"
 import OrderList from "./views/OrderListView"
+import History from "./views/History"
 
 import "flowbite";
 
@@ -59,6 +60,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/room" element={<RoomList />} />
           <Route path="/order" element={<OrderList />} />
+          <Route path="/history" element={<History />} />
         </Routes>
       </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />
