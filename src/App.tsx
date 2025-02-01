@@ -25,10 +25,10 @@ const metadata = {
   icons: ["https://avatars.roomie.com/"],
 };
 
-export const pinata = new PinataSDK({
-  pinataJwt: `${import.meta.env.VITE_PINATA_JWT}`,
-  pinataGateway: `${import.meta.env.VITE_GATEWAY_URL}`
-})
+// export const pinata = new PinataSDK({
+//   pinataJwt: `${import.meta.env.VITE_PINATA_JWT}`,
+//   pinataGateway: `${import.meta.env.VITE_GATEWAY_URL}`
+// })
 
 createAppKit({
   adapters: [new EthersAdapter()],
