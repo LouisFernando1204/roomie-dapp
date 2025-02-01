@@ -1,16 +1,11 @@
 import { BrowserProvider, Contract, JsonRpcProvider } from "ethers";
 import contractAbi from "../abi/contractAbi.json";
-import { useAppKitProvider } from "@reown/appkit/react";
 
 const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
 const networkRPC = import.meta.env.VITE_NETWORK_RPC;
 
-// change to :
-const { walletProvider } = useAppKitProvider('eip155')
-// const provider = new ethers.BrowserProvider((walletProvider) as any);
-
-export async function getContractWithSigner() {
-  const provider = new BrowserProvider((walletProvider) as any);
+export async function getContractWithSigner(_walletProvider : any) {
+  const provider = new BrowserProvider((_walletProvider) as any);
   const signer = await provider.getSigner();
   const contract = new Contract(contractAddress, contractAbi, signer);
   return contract;

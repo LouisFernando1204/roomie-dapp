@@ -2,7 +2,7 @@
 import React from "react";
 import { userNavList } from "../../utils/list";
 import { adminNavList } from "../../utils/list";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { truncate } from "../../utils/helper";
 
 interface NavbarProps {

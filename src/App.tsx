@@ -1,4 +1,9 @@
-import { createAppKit, useAppKit, useAppKitAccount } from "@reown/appkit/react";
+import {
+  createAppKit,
+  useAppKit,
+  useAppKitAccount,
+  useAppKitProvider,
+} from "@reown/appkit/react";
 import { EthersAdapter } from "@reown/appkit-adapter-ethers";
 import { AppKitNetwork, holesky } from "@reown/appkit/networks";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -6,15 +11,17 @@ import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
 import { LodgeProfile } from "./views/LodgeProfile";
-import { PinataSDK } from "pinata-web3"
 import Token from "./views/Token";
 import { Court } from "./views/Court";
 
-import Home from "./views/Home"
-import RoomList from "./views/RoomListView"
-import OrderList from "./views/OrderListView"
+import Home from "./views/Home";
+import RoomList from "./views/RoomListView";
+import OrderList from "./views/OrderListView";
 
 import "flowbite";
+import { getAccommodations } from "./server/accommodation";
+import { Accommodation } from "./model/accommodation";
+import { LoadingScreen } from "./components/ui/loading-screen";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -28,11 +35,6 @@ const metadata = {
   icons: ["https://avatars.roomie.com/"],
 };
 
-export const pinata = new PinataSDK({
-  pinataJwt: `${import.meta.env.VITE_PINATA_JWT}`,
-  pinataGateway: `${import.meta.env.VITE_GATEWAY_URL}`
-})
-
 createAppKit({
   adapters: [new EthersAdapter()],
   networks,
@@ -42,19 +44,55 @@ createAppKit({
 
 function App() {
   const [isUser, setIsUser] = useState(true);
+  const [accommodation, setAccommodation] = useState<Accommodation>();
+  const [loading, setLoading] = useState(true)
+  const [lodgeUpdate, setLodgeUpdate] = useState(false)
+
   const navigate = useNavigate();
 
   const { open } = useAppKit();
   const { address, isConnected } = useAppKitAccount();
+  const { walletProvider } = useAppKitProvider("eip155");
 
   useEffect(() => {
     if (isUser) {
-      navigate("/")
+      navigate("/");
+    } else {
+      navigate("/room");
     }
-    else {
-      navigate("/room")
-    }
+
   }, [isUser, isConnected]);
+
+  useEffect(() => {
+    fetchAccomodations()
+  }, [lodgeUpdate])
+
+  const fetchAccomodations = async () => {
+    setLoading(true)
+    try {
+      const res = await getAccommodations();
+      if (res) {
+        const accommodation = res.find(
+          (item: Accommodation) => item.accommodationHost === address
+        );
+        setAccommodation(accommodation);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    finally {
+      setLoading(false)
+    }
+  };
+
+  useEffect(() => {
+    console.log(accommodation);
+  }, [accommodation]);
+
+
+  if (loading) {
+    return <LoadingScreen />
+  }
 
   return (
     <div className="px-4 md:px-12 font-lato bg-amber-100 min-h-screen flex flex-col">
@@ -68,11 +106,28 @@ function App() {
       <div className="flex-1 mt-32">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/room" element={<RoomList />} />
-            <Route path="/order" element={<OrderList />} />
-            <Route path="/lodge_profile" element={<LodgeProfile connectedAccount={address} />} />
-        <Route path="/token" element={<Token />} />
-        <Route path="/court" element={ <Court /> } />
+          <Route
+            path="/room"
+            element={<RoomList walletProvider={walletProvider} />}
+          />
+          <Route path="/order" element={<OrderList />} />
+          <Route
+            path="/lodge_profile"
+            element={
+              <LodgeProfile
+                connectedAccount={address}
+                isConnected={isConnected}
+                walletProvider={walletProvider}
+                accommodation={accommodation}
+                setLodgeUpdate={setLodgeUpdate}
+                lodgeUpdate={lodgeUpdate}
+                loading={loading}
+                setLoading={setLoading}
+              />
+            }
+          />
+          <Route path="/token" element={<Token />} />
+          <Route path="/court" element={<Court />} />
         </Routes>
       </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />

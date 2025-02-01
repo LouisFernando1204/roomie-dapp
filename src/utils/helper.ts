@@ -1,3 +1,5 @@
+import Swal, { SweetAlertIcon } from "sweetalert2";
+
 export function truncate(
   text: string,
   startChar: number,
@@ -13,4 +15,29 @@ export function truncate(
     return start + end;
   }
   return text;
+}
+
+export function successModal(title: string, transactionHash: string) {
+  Swal.fire({
+    icon: "success",
+    title: title,
+    html: `
+    <p style="margin-bottom: 10px;">Transaction detail can be seen below:</p>
+    <p>
+      <a 
+        href="https://holesky.etherscan.io/tx/${transactionHash}" 
+        target="_blank" 
+        style="color: blue; text-decoration: underline; font-size: 1rem;">
+        ${transactionHash}
+      </a>
+    </p>`,
+  });
+}
+
+export function normalModal(icon: SweetAlertIcon, title: string, text: string) {
+  Swal.fire({
+    icon: icon,
+    title: title,
+    text: text,
+  });
 }

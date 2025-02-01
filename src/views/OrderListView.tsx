@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 
 const OrderList = () => {
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const dummyData = {
     orderListRows: [
