@@ -10,6 +10,12 @@ import { PinataSDK } from "pinata-web3"
 import Token from "./views/Token";
 import { Court } from "./views/Court";
 
+import Home from "./views/Home"
+import RoomList from "./views/RoomListView"
+import OrderList from "./views/OrderListView"
+
+import "flowbite";
+
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
 const networks: [AppKitNetwork] = [holesky];
@@ -51,18 +57,24 @@ function App() {
   }, [isUser, isConnected]);
 
   return (
-    <div className="lg:mx-12 font-poppins">
+    <div className="px-4 md:px-12 font-lato bg-amber-100 min-h-screen flex flex-col">
       <Navbar
         connectedAddress={address}
         setIsUser={setIsUser}
         isUser={isUser}
         handleConnect={open}
       />
-      <Routes>
-        <Route path="/lodge_profile" element={<LodgeProfile connectedAccount={address} />} />
+
+      <div className="flex-1 mt-32">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/room" element={<RoomList />} />
+            <Route path="/order" element={<OrderList />} />
+            <Route path="/lodge_profile" element={<LodgeProfile connectedAccount={address} />} />
         <Route path="/token" element={<Token />} />
         <Route path="/court" element={ <Court /> } />
-      </Routes>
+        </Routes>
+      </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />
     </div>
   );
