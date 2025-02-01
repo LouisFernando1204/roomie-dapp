@@ -24,7 +24,7 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-6 md:py-4">
           {/* Logo */}
           <a href="/" className="flex flex-row gap-2 items-center space-x-3 rtl:space-x-reverse">
-            <img src="\public\images\roomie_logo.jpg" alt="plug" className="h-12" />
+            <img src="\images\roomie_logo.jpg" alt="plug" className="h-12" />
             <span className="hidden md:block self-center text-2xl font-semibold whitespace-nowrap italic">Roomie</span>
           </a>
 
