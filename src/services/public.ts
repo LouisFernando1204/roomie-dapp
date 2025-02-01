@@ -14,7 +14,7 @@ export async function balanceOf(_account: string, _tokenId: number) {
 
 export async function orderDetail(_orderId: string) {
   const contract = await getContractWithoutSigner();
-  const orderDetail = await contract.orderDetail();
+  const orderDetail = await contract.orderDetail(_orderId);
   return structuredOrderDetail(orderDetail);
 }
 
@@ -22,6 +22,12 @@ export async function tokenDetail(_tokenId: number) {
   const contract = await getContractWithoutSigner();
   const tokenDetail = await contract.tokenDetail(_tokenId);
   return structuredTokenDetail(tokenDetail);
+}
+
+export async function caseDetail(_caseId: string) {
+  const contract = await getContractWithoutSigner();
+  const caseDetail = await contract.caseDetail(_caseId);
+  return structuredCaseDetail(caseDetail);
 }
 
 export async function lodgeHost(_lodgeId: string) {
@@ -32,10 +38,10 @@ export async function lodgeHost(_lodgeId: string) {
 
 function structuredOrderDetail(_orderDetail: any) {
   const detail = {
-    customerAddress: _orderDetail[0],
-    checkInTimestamp: _orderDetail[1],
-    checkOutTimestamp: _orderDetail[2],
-    customerStayDuration: _orderDetail[3],
+    customerAddress: _orderDetail[0].toString(),
+    checkInTimestamp: parseInt(_orderDetail[1]),
+    checkOutTimestamp: parseInt(_orderDetail[2]),
+    customerStayDuration: parseInt(_orderDetail[3]),
     customerAlreadyCheckIn: _orderDetail[4],
   };
   return detail;
@@ -44,7 +50,19 @@ function structuredOrderDetail(_orderDetail: any) {
 function structuredTokenDetail(_tokenDetail: any) {
   const detail = {
     lodgeToken: _tokenDetail[0],
-    tokenPricePerNight: _tokenDetail[1],
+    tokenPricePerNight: parseInt(_tokenDetail[1]),
+    tokenSupply: parseInt(_tokenDetail[2]),
+    tokenBurn: parseInt(_tokenDetail[3])
   };
+  return detail;
+}
+
+function structuredCaseDetail(_caseDetail: any) {
+  const detail = {
+    problematicOrder: _caseDetail[0],
+    totalHostVote: parseInt(_caseDetail[1]),
+    totalCustomerVote: parseInt(_caseDetail[2]),
+    caseCreatedTimestamp: parseInt(_caseDetail[3])
+  }
   return detail;
 }

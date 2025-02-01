@@ -8,6 +8,7 @@ import { Footer } from "./components/fixed/Footer";
 import { LodgeProfile } from "./views/LodgeProfile";
 import { PinataSDK } from "pinata-web3"
 import Token from "./views/Token";
+import { Court } from "./views/Court";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -60,6 +61,7 @@ function App() {
       <Routes>
         <Route path="/lodge_profile" element={<LodgeProfile connectedAccount={address} />} />
         <Route path="/token" element={<Token />} />
+        <Route path="/court" element={ <Court /> } />
       </Routes>
       <Footer isUser={isUser} setIsUser={setIsUser} />
     </div>
