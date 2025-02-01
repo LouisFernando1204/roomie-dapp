@@ -102,6 +102,7 @@ const RoomList = () => {
                             <th scope="col" className="px-6 py-3">Price (ETH)</th>
                             <th scope="col" className="px-6 py-3">Facilities</th>
                             <th scope="col" className="px-6 py-3">Actions</th>
+                            <th scope="col" className="px-6 py-3">Mint</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -124,6 +125,7 @@ const RoomList = () => {
                                         Images
                                     </button>
                                 </td>
+                                <td className="px-6 py-4 text-complementary hover:underline">Mint</td>
                             </tr>
                         ))}
                     </tbody>
