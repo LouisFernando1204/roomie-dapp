@@ -1,6 +1,5 @@
 import {
   encodeBytes32String,
-  formatEther,
   parseEther,
   toUtf8Bytes,
 } from "ethers";

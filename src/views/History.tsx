@@ -17,31 +17,31 @@ interface BookingHistoryItem {
   nftImage: string;
 }
 
-const fetchHistoryData = async (): Promise<BookingHistoryItem[]> => {
-  // Replace with actual API call
-  return [
-    {
-      orderId: "12345",
-      lodgeId: "67890",
-      userAccount: "0x237128as987d23f...",
-      tokenId: "54321",
-      checkIn: 1704067200,
-      checkOut: 1704153600,
-      checkedIn: false,
-      nftImage: "https://via.placeholder.com/150",
-    },
-    {
-      orderId: "54321",
-      lodgeId: "09876",
-      userAccount: "0x98f7123ba7638ff...",
-      tokenId: "67890",
-      checkIn: 1704153600,
-      checkOut: 1704240000,
-      checkedIn: false,
-      nftImage: "https://via.placeholder.com/150",
-    },
-  ];
-};
+// const fetchHistoryData = async (): Promise<BookingHistoryItem[]> => {
+//   // Replace with actual API call
+//   return [
+//     {
+//       orderId: "12345",
+//       lodgeId: "67890",
+//       userAccount: "0x237128as987d23f...",
+//       tokenId: "54321",
+//       checkIn: 1704067200,
+//       checkOut: 1704153600,
+//       checkedIn: false,
+//       nftImage: "https://via.placeholder.com/150",
+//     },
+//     {
+//       orderId: "54321",
+//       lodgeId: "09876",
+//       userAccount: "0x98f7123ba7638ff...",
+//       tokenId: "67890",
+//       checkIn: 1704153600,
+//       checkOut: 1704240000,
+//       checkedIn: false,
+//       nftImage: "https://via.placeholder.com/150",
+//     },
+//   ];
+// };
 
 const HistoryPage: React.FC = () => {
   const [history, setHistory] = useState<BookingHistoryItem[]>([]);
@@ -50,7 +50,7 @@ const HistoryPage: React.FC = () => {
   const currentDate = Math.floor(Date.now() / 1000);
 
   useEffect(() => {
-    fetchHistoryData().then(setHistory);
+    
   }, []);
 
   const handleCheckIn = (orderId: string) => {
@@ -64,8 +64,8 @@ const HistoryPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-lightGray min-h-screen font-poppins">
-      <h1 className="text-2xl font-bold text-almostBlack mb-4">Booking History</h1>
+    <div className="min-h-screen">
+      <h1 className="text-2xl font-bold text-darkOrange mb-4">Booking History</h1>
       <div className="space-y-4">
         {history.map((item) => (
           <motion.div

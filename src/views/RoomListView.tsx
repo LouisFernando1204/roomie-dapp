@@ -146,9 +146,8 @@ const RoomList: React.FC<RoomListProps> = ({
     <div className="">
       <div className="mb-4">
         <h1 className="text-3xl font-semibold text-darkOrange">
-          Your Room List
+          {`${accommodation.accommodationName} room list`}
         </h1>
-        <p className="text-sm text-gray-500">Hotel Termewah di Tata Surya</p>
       </div>
       <button
         onClick={() => setShowCreateModal(true)}
