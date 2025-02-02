@@ -11,7 +11,6 @@ import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
 import { LodgeProfile } from "./views/LodgeProfile";
-import Token from "./views/Token";
 import { Court } from "./views/Court";
 
 import Home from "./views/Home";
@@ -60,12 +59,11 @@ function App() {
     } else {
       navigate("/room");
     }
-
   }, [isUser, isConnected]);
 
   useEffect(() => {
     fetchAccomodations()
-  }, [lodgeUpdate])
+  }, [lodgeUpdate, isConnected])
 
   const fetchAccomodations = async () => {
     setLoading(true)
@@ -108,7 +106,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route
             path="/room"
-            element={<RoomList walletProvider={walletProvider} />}
+            element={<RoomList walletProvider={walletProvider} accommodation={accommodation} isConnected={ isConnected } />}
           />
           <Route path="/order" element={<OrderList />} />
           <Route
@@ -126,7 +124,6 @@ function App() {
               />
             }
           />
-          <Route path="/token" element={<Token />} />
           <Route path="/court" element={<Court />} />
         </Routes>
       </div>

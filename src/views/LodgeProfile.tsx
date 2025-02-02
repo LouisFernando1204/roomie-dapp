@@ -94,7 +94,9 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
         if (receipt) {
           setLodgeUpdate(!lodgeUpdate);
           if (!loading) {
-            successModal("Registered Successfully!", tx.hash);
+            setTimeout(() => {
+              successModal("Registered Successfully!", tx.hash);
+            }, 1000);
           }
         }
       }

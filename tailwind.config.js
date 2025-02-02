@@ -21,6 +21,7 @@ module.exports = {
         complementary: "#3000ff",
         darkOrange: "#ff8c00",
         brightYellow: "#ffdd00",
+        darkYellow: "#e6c200",
         coral: "#ff5733",
         skyBlue: "#00b4d8",
         almostBlack: "#1a1a1a",

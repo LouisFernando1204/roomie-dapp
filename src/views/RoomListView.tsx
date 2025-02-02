@@ -1,117 +1,31 @@
 "use client";
-import React, { useState } from "react";
-import { mint, registerLodge } from "../services/host";
-import { encodeBytes32String } from "ethers";
-import { normalModal, successModal } from "../utils/helper";
-
-interface Room {
-  roomType: string;
-  tokenID: number;
-  total: number;
-  available: number;
-  occupied: number;
-  bedType: string;
-  maxPeople: number;
-  originalPrice: number;
-  facilities: string[];
-  image: string[];
-}
+import React, { useEffect, useState } from "react";
+import { Accommodation } from "../model/accommodation";
+import { EmptyPage } from "./EmptyPage";
+import { CreateRoomModal } from "../components/modal/CreateRoomModal";
+import { getRooms } from "../server/room";
+import { LoadingScreen } from "../components/ui/loading-screen";
+import { Room } from "../model/room";
 
 interface RoomListProps {
   walletProvider: any;
+  accommodation: Accommodation | undefined;
+  isConnected: boolean;
 }
 
-const RoomList: React.FC<RoomListProps> = ({ walletProvider }) => {
+const RoomList: React.FC<RoomListProps> = ({
+  walletProvider,
+  accommodation,
+  isConnected,
+}) => {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const dummyData = {
-    roomListRows: [
-      {
-        roomType: "Jomblo",
-        tokenID: 1,
-        total: 30,
-        available: 24,
-        occupied: 6,
-        bedType: "Single",
-        maxPeople: 1,
-        originalPrice: 1000,
-        facilities: ["Free wifi", "yang sabar ya bro"],
-        image: ["/images/hotel_pic.jpg"],
-      },
-      {
-        roomType: "Double",
-        tokenID: 2,
-        total: 30,
-        available: 20,
-        occupied: 10,
-        bedType: "Queen",
-        maxPeople: 2,
-        originalPrice: 2000,
-        facilities: ["yah standar aja lah bro"],
-        image: [
-          "/images/hotel_pic.jpg",
-          "/images/hotel_pic.jpg",
-          "/images/hotel_pic.jpg",
-          "/images/hotel_pic.jpg",
-        ],
-      },
-      {
-        roomType: "Twin",
-        tokenID: 3,
-        total: 30,
-        available: 24,
-        occupied: 6,
-        bedType: "Twin",
-        maxPeople: 2,
-        originalPrice: 2500,
-        facilities: ["no joren allowed", "kita pisahan kasur"],
-        image: ["/images/hotel_pic.jpg"],
-      },
-      {
-        roomType: "Suite",
-        tokenID: 4,
-        total: 30,
-        available: 24,
-        occupied: 6,
-        bedType: "Kasur Emas",
-        maxPeople: 10,
-        originalPrice: 30000,
-        facilities: [
-          "Free Breakfast",
-          "Kitchenette",
-          "Free Dinner",
-          "Free Laundry",
-        ],
-        image: ["/images/hotel_pic.jpg"],
-      },
-    ] as Room[],
-  };
+  const [rooms, setRooms] = useState<Room[]>([]);
 
-  const mintToken = async (tokenId: number) => {
-      try {
-        console.log(encodeBytes32String("0x123456"))
-      const transaction = await mint(
-        "0x123456",
-        100,
-        2,
-        "",
-        walletProvider
-      );
-      console.log(transaction.hash);
-      const receipt = await transaction.wait();
-      if (receipt) {
-        successModal("Successfully mint!", `${transaction.hash}`);
-      }
-    } catch (error) {
-      console.log(error);
-        normalModal(
-        "error",
-        "Oops..",
-        "Error while mint a token. Please try again later!"
-      );
-    }
-  };
+  const [loading, setLoading] = useState(false);
+  const [update, setUpdate] = useState(false)
 
   const openModal = (room: Room) => {
     setSelectedRoom(room);
@@ -123,90 +37,157 @@ const RoomList: React.FC<RoomListProps> = ({ walletProvider }) => {
     setSelectedRoom(null);
   };
 
+  const fetchRooms = async () => {
+    setLoading(true);
+    try {
+      const res = await getRooms();
+      const filtered = res.filter(
+        (room: Room) =>
+          String(room.accommodationId).trim() ===
+          String(accommodation!.id).trim()
+      );
+      setRooms(filtered);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRooms();
+  }, [accommodation, update]);
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  if (!isConnected || !accommodation) {
+    return (
+      <EmptyPage
+        title={"Oops.."}
+        text={
+          "Unfortunately you don't have an access to access this page. Please register your accommodation (Lodge) first!"
+        }
+      />
+    );
+  }
+
   return (
     <div className="">
-      <div className="mb-8">
+      <div className="mb-4">
         <h1 className="text-3xl font-semibold text-darkOrange">
           Your Room List
         </h1>
         <p className="text-sm text-gray-500">Hotel Termewah di Tata Surya</p>
       </div>
+      <button
+        onClick={() => setShowCreateModal(true)}
+        className="p-3 mb-8 text-secondary bg-darkOrange rounded-xl duration-200 hover:scale-105 shadow-md"
+      >
+        Create Room
+      </button>
 
-      <div className="mb-8 relative overflow-x-auto shadow-md sm:rounded-lg bg-brightYellow">
-        <table className="w-full text-sm text-left rtl:text-right text-darkOrange">
-          <thead className="text-xs text-gray-700 uppercase bg-gray-50">
-            <tr>
-              <th scope="col" className="px-6 py-3">
-                Room type
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Token ID
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Total
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Available
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Occupied
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Bed Type
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Max People
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Price (ETH)
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Facilities
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Actions
-              </th>
-              <th scope="col" className="px-6 py-3">
-                Mint
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {dummyData.roomListRows.map((room, index) => (
-              <tr
-                key={index}
-                className="bg-white border-b border-gray-200 hover:bg-gray-50"
-              >
-                <td className="px-6 py-4 font-medium text-gray-900">
-                  {room.roomType}
-                </td>
-                <td className="px-6 py-4">{room.tokenID}</td>
-                <td className="px-6 py-4">{room.total}</td>
-                <td className="px-6 py-4">{room.available}</td>
-                <td className="px-6 py-4">{room.occupied}</td>
-                <td className="px-6 py-4">{room.bedType}</td>
-                <td className="px-6 py-4">{room.maxPeople}</td>
-                <td className="px-6 py-4">{room.originalPrice}</td>
-                <td className="px-6 py-4">{room.facilities.join(", ")}</td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={() => openModal(room)}
-                    className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-600 rounded-lg text-sm"
-                  >
-                    Images
-                  </button>
-                </td>
-                <td
-                  onClick={() => mintToken(room.tokenID)}
-                  className="px-6 py-4 cursor-pointer text-complementary hover:underline"
-                >
+      {rooms.length > 0 ? (
+        <div className="mb-8 relative overflow-x-auto shadow-md sm:rounded-lg bg-brightYellow">
+          <table className="w-full text-sm text-left rtl:text-right text-darkOrange">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3">
+                  Room type
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Description
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Token ID
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Total
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Available
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Occupied
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Bed Type
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Max People
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Price (ETH)
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Facilities
+                </th>
+                <th scope="col" className="px-6 py-3">
+                  Actions
+                </th>
+                <th scope="col" className="px-6 py-3">
                   Mint
-                </td>
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {rooms.map((room, index) => (
+                <tr
+                  key={index}
+                  className="bg-white border-b border-gray-200 hover:bg-gray-50"
+                >
+                  <td className="px-6 py-4 font-medium text-gray-900">
+                    {room.roomType}
+                  </td>
+                  <td className="px-6 py-4">{room.roomDescription}</td>
+                  <td className="px-6 py-4">{room.tokenId}</td>
+
+                  <td className="px-6 py-4">{0}</td>
+                  <td className="px-6 py-4">{0}</td>
+                  <td className="px-6 py-4">{0}</td>
+
+                  <td className="px-6 py-4">{room.bedSize}</td>
+                  <td className="px-6 py-4">{room.maxOccupancy}</td>
+                  <td className="px-6 py-4">{room.price}</td>
+                  <td className="px-6 py-4">{room.facilities.join(", ")}</td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={() => openModal(room)}
+                      className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-600 rounded-lg text-sm"
+                    >
+                      Images
+                    </button>
+                  </td>
+                  <td
+                    // onClick={() => mintToken(room.tokenID)}
+                    className="px-6 py-4 cursor-pointer text-complementary hover:underline"
+                  >
+                    Mint
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <EmptyPage
+          title="Uh-oh! No rooms yet!"
+          text="Looks like you haven't added any rooms. Why not create one and get started?"
+        />
+      )}
+
+      {showCreateModal && (
+        <CreateRoomModal
+          accommodation={accommodation}
+          setShowModal={setShowCreateModal}
+          loading={loading}
+          setLoading={setLoading}
+          update={update}
+          setUpdate={setUpdate}
+          walletProvider={walletProvider}
+        />
+      )}
 
       {showModal && selectedRoom && (
         <div
@@ -227,7 +208,7 @@ const RoomList: React.FC<RoomListProps> = ({ walletProvider }) => {
               </button>
             </div>
             <div className="grid grid-cols-2 gap-4 p-4">
-              {selectedRoom.image.map((img, index) => (
+              {selectedRoom.imageUrls.map((img, index) => (
                 <img
                   key={index}
                   src={img}
