@@ -21,6 +21,7 @@ import "flowbite";
 import { getAccommodations } from "./server/accommodation";
 import { Accommodation } from "./model/accommodation";
 import { LoadingScreen } from "./components/ui/loading-screen";
+import HistoryPage from "./views/History";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -124,6 +125,7 @@ function App() {
               />
             }
           />
+          <Route path="/history" element={ <HistoryPage /> } />
           <Route path="/court" element={<Court />} />
         </Routes>
       </div>
