@@ -125,7 +125,7 @@ function App() {
               />
             }
           />
-          <Route path="/history" element={ <HistoryPage /> } />
+          <Route path="/history" element={ <HistoryPage walletProvider={walletProvider} address={address} /> } />
           <Route path="/court" element={<Court />} />
         </Routes>
       </div>

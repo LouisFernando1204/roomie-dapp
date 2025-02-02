@@ -41,7 +41,6 @@ export async function mint(
   const contract = await getContractWithSigner(_walletProvider);
   const tokenPrice = (await tokenDetail(_tokenId)).tokenPricePerNight;
   const deposit = BigInt(parseEther(tokenPrice.toString())) * BigInt(_value);
-  console.log(deposit);
   const transaction = await contract.mint(
     encodeBytes32String(_lodgeId),
     _tokenId,

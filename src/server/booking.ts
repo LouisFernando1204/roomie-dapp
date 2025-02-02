@@ -11,14 +11,14 @@ export async function createBooking(
   _durationInDays: number
 ) {
   try {
-    const res = await axios.post(`${BACKEND_API_URL}`, {
+    const res = await axios.post(`${BACKEND_API_URL}bookings`, {
       accommodationId: _accommodationId,
       roomId: _roomId,
       tokenId: _tokenId,
       userAccount: _userAccount,
       checkIn: _checkIn,
       checkOut: _checkOut,
-      durationInDays: _durationInDays
+      durationInDays: _durationInDays,
     });
     return res;
   } catch (error) {
@@ -30,9 +30,24 @@ export async function createBooking(
 export async function getBookings() {
   try {
     const res = await axios.get(`${BACKEND_API_URL}bookings`);
-    return res.data;
+    return structuredBookings(res.data);
   } catch (error) {
     console.log(error);
     return;
   }
+}
+
+function structuredBookings(bookings: any) {
+  return bookings.map((booking: any) => ({
+    id: booking._id,
+    accommodationId: booking.accommodationId,
+    roomId: booking.roomId,
+    tokenId: booking.tokenId,
+    userAccount: booking.userAccount,
+    checkIn: booking.checkIn,
+    checkOut: booking.checkOut,
+    durationInDays: booking.durationInDays,
+    alreadyCheckIn: false,
+    alreadyCheckOut: false
+  }));
 }

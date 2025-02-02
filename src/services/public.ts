@@ -1,4 +1,4 @@
-import { decodeBytes32String, formatEther } from "ethers";
+import { decodeBytes32String, encodeBytes32String, formatEther } from "ethers";
 import { getContractWithoutSigner } from "./connector";
 
 export async function uri(_tokenId: number) {
@@ -15,7 +15,7 @@ export async function balanceOf(_account: string, _tokenId: number) {
 
 export async function orderDetail(_orderId: string) {
   const contract = await getContractWithoutSigner();
-  const orderDetail = await contract.orderDetail(_orderId);
+  const orderDetail = await contract.orderDetail(encodeBytes32String(_orderId));
   return structuredOrderDetail(orderDetail);
 }
 
