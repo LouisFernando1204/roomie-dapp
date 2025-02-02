@@ -44,6 +44,7 @@ function structuredOrderDetail(_orderDetail: any) {
     checkOutTimestamp: parseInt(_orderDetail[2]),
     customerStayDuration: parseInt(_orderDetail[3]),
     customerAlreadyCheckIn: _orderDetail[4],
+    customerAlreadyCheckOut: _orderDetail[5],
   };
   return detail;
 }

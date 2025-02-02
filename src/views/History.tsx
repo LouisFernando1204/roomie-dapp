@@ -54,7 +54,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
             return {
               ...book,
               alreadyCheckIn: data.customerAlreadyCheckIn,
-              alreadyCheckOut: data.customerAlreadyCheckIn, //ganti ini
+              alreadyCheckOut: data.customerAlreadyCheckOut,
               accommodationName: filteredAccommodation.accommodationName,
             };
           })
@@ -139,7 +139,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
           104,
           1,
           Math.floor(new Date().getTime() / 1000),
-          Math.floor(new Date().getTime() / 1000) + 1 * 24 * 60 * 60,
           walletProvider
         );
         const receipt = await tx.wait();
