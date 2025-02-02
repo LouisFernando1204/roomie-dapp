@@ -6,6 +6,8 @@ import { CreateRoomModal } from "../components/modal/CreateRoomModal";
 import { getRooms } from "../server/room";
 import { LoadingScreen } from "../components/ui/loading-screen";
 import { Room } from "../model/room";
+import { normalModal } from "../utils/helper";
+import { mint } from "../services/host";
 
 interface RoomListProps {
   walletProvider: any;
@@ -25,7 +27,7 @@ const RoomList: React.FC<RoomListProps> = ({
   const [rooms, setRooms] = useState<Room[]>([]);
 
   const [loading, setLoading] = useState(false);
-  const [update, setUpdate] = useState(false)
+  const [update, setUpdate] = useState(false);
 
   const openModal = (room: Room) => {
     setSelectedRoom(room);
@@ -35,6 +37,28 @@ const RoomList: React.FC<RoomListProps> = ({
   const closeModal = () => {
     setShowModal(false);
     setSelectedRoom(null);
+  };
+
+  const errorScenario = () => {
+    setLoading(false);
+    if (!loading) {
+      setTimeout(() => {
+        normalModal(
+          "error",
+          "Oops...",
+          "Error while mint a token. Please try again later!"
+        );
+      }, 1000);
+    }
+  };
+
+  const mintToken = async (tokenId: number) => {
+    try {
+      // const tx = await mint(accommodation!.id, tokenId)
+    } catch (error) {
+      console.log(error);
+      errorScenario();
+    }
   };
 
   const fetchRooms = async () => {
@@ -103,13 +127,10 @@ const RoomList: React.FC<RoomListProps> = ({
                   Token ID
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Total
+                  Mint
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Available
-                </th>
-                <th scope="col" className="px-6 py-3">
-                  Occupied
+                  Burn
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Bed Type
@@ -143,9 +164,8 @@ const RoomList: React.FC<RoomListProps> = ({
                   <td className="px-6 py-4">{room.roomDescription}</td>
                   <td className="px-6 py-4">{room.tokenId}</td>
 
-                  <td className="px-6 py-4">{0}</td>
-                  <td className="px-6 py-4">{0}</td>
-                  <td className="px-6 py-4">{0}</td>
+                  <td className="px-6 py-4">{room.supply}</td>
+                  <td className="px-6 py-4">{room.burn}</td>
 
                   <td className="px-6 py-4">{room.bedSize}</td>
                   <td className="px-6 py-4">{room.maxOccupancy}</td>
@@ -160,7 +180,7 @@ const RoomList: React.FC<RoomListProps> = ({
                     </button>
                   </td>
                   <td
-                    // onClick={() => mintToken(room.tokenID)}
+                    onClick={() => mintToken(room.tokenId)}
                     className="px-6 py-4 cursor-pointer text-complementary hover:underline"
                   >
                     Mint

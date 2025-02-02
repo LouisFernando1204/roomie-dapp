@@ -96,20 +96,32 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
           if (!loading) {
             setTimeout(() => {
               successModal("Registered Successfully!", tx.hash);
-            }, 1000);
+            }, 2500);
           }
         }
+        else {
+          errorScenario();
+        }
+      }
+      else {
+        errorScenario();
       }
     } catch (error) {
       console.log(error);
-      setLoading(false);
-      if (!loading) {
+      errorScenario();
+    }
+  };
+
+  const errorScenario = () => {
+    setLoading(false);
+    if (!loading) {
+      setTimeout(() => {
         normalModal(
           "error",
           "Oops...",
           "Error while register your accommodation. Please try again later!"
         );
-      }
+      }, 1000);
     }
   };
 

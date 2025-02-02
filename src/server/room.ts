@@ -53,5 +53,7 @@ function structuredRooms(rooms: any) {
     bedSize: room.bedSize,
     maxOccupancy: room.maxOccupancy,
     imageUrls: room.imageUrls,
+    supply: 0,
+    burn: 0,
   }));
 }

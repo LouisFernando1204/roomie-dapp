@@ -1,4 +1,4 @@
-import { encodeBytes32String, toUtf8Bytes } from "ethers";
+import { encodeBytes32String, parseEther, toUtf8Bytes } from "ethers";
 import { getContractWithSigner } from "./connector";
 import { tokenDetail } from "./public";
 
@@ -14,15 +14,15 @@ export async function registerToken(
   _lodgeId: string,
   _tokenURI: string,
   _tokenId: number,
-  _tokenPrice: number,
+  _tokenPrice: string,
   _walletProvider: any
 ) {
   const contract = await getContractWithSigner(_walletProvider);
   const transaction = await contract.registerToken(
-    _lodgeId,
+    encodeBytes32String(_lodgeId),
     _tokenURI,
     _tokenId,
-    _tokenPrice
+    parseEther(_tokenPrice)
   );
   return transaction;
 }

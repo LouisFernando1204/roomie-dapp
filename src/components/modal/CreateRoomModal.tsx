@@ -4,6 +4,7 @@ import { parseEther } from "ethers";
 import { createRoom } from "../../server/room";
 import { pinata } from "../../global/global";
 import { Accommodation } from "../../model/accommodation";
+import { registerToken } from "../../services/host";
 
 interface CreateRoomModalProps {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>;
@@ -22,7 +23,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   setLoading,
   update,
   setUpdate,
-  walletProvider
+  walletProvider,
 }) => {
   const [lodgeId, setLodgeId] = useState("");
 
@@ -67,36 +68,32 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             uploadedImages
           );
           if (res!.status == 201) {
-            setShowModal(false);
-            setUpdate(!update);
-            if (!loading) {
-              setTimeout(() => {
-                successModal("Created Successfully!", "0xasdnasd");
-              }, 1000);
+            const tx = await registerToken(
+              accommodation!.id,
+              tokenUri,
+              parseInt(tokenId),
+              tokenPrice,
+              walletProvider
+            );
+            const receipt = await tx.wait();
+            if (receipt) {
+              setShowModal(false);
+              setUpdate(!update);
+              if (!loading) {
+                setTimeout(() => {
+                  successModal("Created Successfully!", tx.hash);
+                }, 2500);
+              }
+            } else {
+              errorScenario();
             }
           }
         } else {
-          setShowModal(false);
-          setLoading(false);
-          if (!loading) {
-            normalModal(
-              "error",
-              "Oops...",
-              "Error while create your room type. Please try again later!"
-            );
-          }
+          errorScenario()
         }
       } catch (error) {
         console.log(error);
-        setShowModal(false);
-        setLoading(false);
-        if (!loading) {
-          normalModal(
-            "error",
-            "Oops...",
-            "Error while create your room type. Please try again later!"
-          );
-        }
+        errorScenario()
       }
     }
   };
@@ -113,6 +110,20 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     } catch (error) {
       console.log(error);
       throw error;
+    }
+  };
+
+  const errorScenario = () => {
+    setShowModal(false);
+    setLoading(false);
+    if (!loading) {
+      setTimeout(() => {
+        normalModal(
+          "error",
+          "Oops...",
+          "Error while create your room type. Please try again later!"
+        );
+      }, 1000);
     }
   };
 
@@ -141,7 +152,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     const jsonToUpload = {
       name: roomType,
       token_id: parseInt(tokenId),
-      price_per_night: parseFloat(tokenPrice),
+      price_per_night_in_eth: parseFloat(tokenPrice),
       lodge_id: accommodation!.id,
       lodge_name: accommodation!.accommodationName,
       image: imageUrl,

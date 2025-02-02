@@ -9,4 +9,6 @@ export interface Room {
   bedSize: string;
   maxOccupancy: number;
   imageUrls: string[];
+  supply: number;
+  burn: number;
 }
