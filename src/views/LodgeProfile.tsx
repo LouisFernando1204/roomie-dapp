@@ -180,7 +180,7 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
   return (
     <div>
       <section className="dark:bg-gray-900 mb-12">
-        <div className="lg:mx-80 flex gap-4">
+        <div className="xl:mx-80 flex gap-4">
           <div className="w-full shadow-2xl rounded-xl dark:bg-gray-800/40">
             <div className="">
               <div>

@@ -6,8 +6,9 @@ import { CreateRoomModal } from "../components/modal/CreateRoomModal";
 import { getRooms } from "../server/room";
 import { LoadingScreen } from "../components/ui/loading-screen";
 import { Room } from "../model/room";
-import { normalModal } from "../utils/helper";
+import { normalModal, successModal } from "../utils/helper";
 import { mint } from "../services/host";
+import { tokenDetail } from "../services/public";
 
 interface RoomListProps {
   walletProvider: any;
@@ -23,19 +24,32 @@ const RoomList: React.FC<RoomListProps> = ({
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showMintModal, setShowMintModal] = useState(false);
 
   const [rooms, setRooms] = useState<Room[]>([]);
 
   const [loading, setLoading] = useState(false);
   const [update, setUpdate] = useState(false);
 
+  const [mintValue, setMintValue] = useState("");
+
   const openModal = (room: Room) => {
     setSelectedRoom(room);
     setShowModal(true);
   };
 
+  const openMintModal = (room: Room) => {
+    setSelectedRoom(room);
+    setShowMintModal(true);
+  };
+
   const closeModal = () => {
     setShowModal(false);
+    setSelectedRoom(null);
+  };
+
+  const closeMintModal = () => {
+    setShowMintModal(false);
     setSelectedRoom(null);
   };
 
@@ -53,8 +67,27 @@ const RoomList: React.FC<RoomListProps> = ({
   };
 
   const mintToken = async (tokenId: number) => {
+    closeMintModal();
+    setLoading(true);
     try {
-      // const tx = await mint(accommodation!.id, tokenId)
+      const tx = await mint(
+        accommodation!.id,
+        tokenId,
+        parseInt(mintValue),
+        "",
+        walletProvider
+      );
+      const receipt = await tx.wait();
+      if (receipt) {
+        setUpdate(!update);
+        if (!loading) {
+          setTimeout(() => {
+            successModal("Minted Successfully!", tx.hash);
+          }, 2000);
+        }
+      } else {
+        errorScenario();
+      }
     } catch (error) {
       console.log(error);
       errorScenario();
@@ -70,7 +103,19 @@ const RoomList: React.FC<RoomListProps> = ({
           String(room.accommodationId).trim() ===
           String(accommodation!.id).trim()
       );
-      setRooms(filtered);
+      if (filtered) {
+        const updatedRooms = await Promise.all(
+          filtered.map(async (room: Room, _: any) => {
+            const data = await tokenDetail(room.tokenId);
+            return {
+              ...room,
+              supply: data.tokenSupply,
+              burn: data.tokenBurn,
+            };
+          })
+        );
+        setRooms(updatedRooms);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -127,7 +172,7 @@ const RoomList: React.FC<RoomListProps> = ({
                   Token ID
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Mint
+                  Supply
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Burn
@@ -180,7 +225,7 @@ const RoomList: React.FC<RoomListProps> = ({
                     </button>
                   </td>
                   <td
-                    onClick={() => mintToken(room.tokenId)}
+                    onClick={() => openMintModal(room)}
                     className="px-6 py-4 cursor-pointer text-complementary hover:underline"
                   >
                     Mint
@@ -236,6 +281,51 @@ const RoomList: React.FC<RoomListProps> = ({
                   className="w-full h-48 object-cover rounded-lg"
                 />
               ))}
+            </div>
+          </div>
+        </div>
+      )}
+      {showMintModal && selectedRoom && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          onClick={closeMintModal}
+        >
+          <div
+            className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center p-4 border-b">
+              <h3 className="text-xl font-semibold">
+                Mint Token for ID: {selectedRoom.tokenId}
+              </h3>
+              <button
+                onClick={closeMintModal}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="mx-4 my-4">
+              <label
+                htmlFor=""
+                className={`pl-1 mb-2 dark:text-gray-300 font-semibold`}
+              >
+                How many tokens would you like to mint?
+              </label>
+              <input
+                type="number"
+                className={`mt-2 p-4 w-full border-2 rounded-lg focus:border-primary focus:outline-none`}
+                placeholder="E.g., 1, 2"
+                onChange={(e) => setMintValue(e.target.value)}
+                min={0}
+                step={1}
+              />
+              <button
+                onClick={() => mintToken(selectedRoom.tokenId)}
+                className="p-3 bg-brightYellow w-full text-secondary rounded-xl mt-6 font-semibold shadow-md"
+              >
+                Mint
+              </button>
             </div>
           </div>
         </div>

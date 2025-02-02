@@ -1,4 +1,9 @@
-import { encodeBytes32String, parseEther, toUtf8Bytes } from "ethers";
+import {
+  encodeBytes32String,
+  formatEther,
+  parseEther,
+  toUtf8Bytes,
+} from "ethers";
 import { getContractWithSigner } from "./connector";
 import { tokenDetail } from "./public";
 
@@ -36,12 +41,14 @@ export async function mint(
 ) {
   const contract = await getContractWithSigner(_walletProvider);
   const tokenPrice = (await tokenDetail(_tokenId)).tokenPricePerNight;
+  const deposit = BigInt(parseEther(tokenPrice.toString())) * BigInt(_value);
+  console.log(deposit);
   const transaction = await contract.mint(
     encodeBytes32String(_lodgeId),
     _tokenId,
     _value,
     toUtf8Bytes(_data),
-    { value: tokenPrice * _value }
+    { value: deposit }
   );
   return transaction;
 }

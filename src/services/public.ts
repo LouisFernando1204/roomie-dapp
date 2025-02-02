@@ -1,3 +1,4 @@
+import { decodeBytes32String, formatEther } from "ethers";
 import { getContractWithoutSigner } from "./connector";
 
 export async function uri(_tokenId: number) {
@@ -49,8 +50,8 @@ function structuredOrderDetail(_orderDetail: any) {
 
 function structuredTokenDetail(_tokenDetail: any) {
   const detail = {
-    lodgeToken: _tokenDetail[0],
-    tokenPricePerNight: parseInt(_tokenDetail[1]),
+    lodgeToken: decodeBytes32String(_tokenDetail[0]),
+    tokenPricePerNight: formatEther(_tokenDetail[1]),
     tokenSupply: parseInt(_tokenDetail[2]),
     tokenBurn: parseInt(_tokenDetail[3])
   };
