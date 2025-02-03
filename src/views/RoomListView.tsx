@@ -8,7 +8,7 @@ import { LoadingScreen } from "../components/ui/loading-screen";
 import { Room } from "../model/room";
 import { normalModal, successModal } from "../utils/helper";
 import { mint } from "../services/host";
-import { tokenDetail } from "../services/public";
+import { tokenDetail, uri } from "../services/public";
 
 interface RoomListProps {
   walletProvider: any;
@@ -107,10 +107,12 @@ const RoomList: React.FC<RoomListProps> = ({
         const updatedRooms = await Promise.all(
           filtered.map(async (room: Room, _: any) => {
             const data = await tokenDetail(room.tokenId);
+            const metadata = await uri(room.tokenId);
             return {
               ...room,
               supply: data.tokenSupply,
               burn: data.tokenBurn,
+              tokenMetadata: metadata,
             };
           })
         );
@@ -215,12 +217,15 @@ const RoomList: React.FC<RoomListProps> = ({
                   <td className="px-6 py-4">{room.maxOccupancy}</td>
                   <td className="px-6 py-4">{room.price}</td>
                   <td className="px-6 py-4">{room.facilities.join(", ")}</td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 space-x-2">
                     <button
                       onClick={() => openModal(room)}
                       className="px-4 py-2 bg-blue-700 text-white hover:bg-blue-600 rounded-lg text-sm"
                     >
                       Images
+                    </button>
+                    <button className="px-4 py-2 bg-brightYellow text-white hover:bg-darkYellow rounded-lg text-sm">
+                      <a href={room.tokenMetadata} target="_blank" rel="noopener noreferrer">View Metadata</a>
                     </button>
                   </td>
                   <td

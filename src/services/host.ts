@@ -1,8 +1,4 @@
-import {
-  encodeBytes32String,
-  parseEther,
-  toUtf8Bytes,
-} from "ethers";
+import { encodeBytes32String, parseEther, toUtf8Bytes } from "ethers";
 import { getContractWithSigner } from "./connector";
 import { tokenDetail } from "./public";
 
@@ -51,12 +47,17 @@ export async function mint(
   return transaction;
 }
 
-// export async function checkOut(
-//   _lodgeId: string,
-//   _orderId: string,
-//   _tokenId: number
-// ) {
-//   const contract = await getContractWithSigner();
-//   const transaction = await contract.checkOut(_lodgeId, _orderId, _tokenId);
-//   return transaction;
-// }
+export async function withdrawFromCustomerCheckOut(
+  _lodgeId: string,
+  _orderId: string,
+  _tokenId: number,
+  _walletProvider: any
+) {
+  const contract = await getContractWithSigner(_walletProvider);
+  const transaction = await contract.withdrawFromCustomerCheckOut(
+    encodeBytes32String(_lodgeId),
+    encodeBytes32String(_orderId),
+    _tokenId
+  );
+  return transaction;
+}

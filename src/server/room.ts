@@ -45,6 +45,7 @@ function structuredRooms(rooms: any) {
   return rooms.map((room: any) => ({
     id: room._id,
     tokenId: room.tokenId,
+    tokenMetadata: "",
     accommodationId: room.accommodationId,
     roomType: room.roomType,
     roomDescription: room.roomDescription,

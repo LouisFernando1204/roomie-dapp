@@ -40,12 +40,15 @@ export async function lodgeHost(_lodgeId: string) {
 function structuredOrderDetail(_orderDetail: any) {
   const detail = {
     customerAddress: _orderDetail[0].toString(),
-    checkInTimestamp: parseInt(_orderDetail[1]),
-    checkOutTimestamp: parseInt(_orderDetail[2]),
-    customerStayDuration: parseInt(_orderDetail[3]),
-    customerAlreadyCheckIn: _orderDetail[4],
-    customerAlreadyCheckOut: _orderDetail[5],
+    accommodation: decodeBytes32String(_orderDetail[1]),
+    orderToken: parseInt(_orderDetail[2]),
+    checkInTimestamp: parseInt(_orderDetail[3]),
+    checkOutTimestamp: parseInt(_orderDetail[4]),
+    customerStayDuration: parseInt(_orderDetail[5]),
+    customerAlreadyCheckIn: Boolean(_orderDetail[6]),
+    customerAlreadyCheckOut: Boolean(_orderDetail[7]),
   };
+  console.log(detail)
   return detail;
 }
 

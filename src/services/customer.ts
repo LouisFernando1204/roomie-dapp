@@ -32,8 +32,8 @@ export async function checkIn(_orderId: string, _walletProvider: any) {
   return transaction;
 }
 
-export async function checkOut(_orderId: string, _walletProvider: any) {
+export async function checkOut(_orderId: string, _tokenId: number, _walletProvider: any) {
   const contract = await getContractWithSigner(_walletProvider);
-  const transaction = await contract.checkOut(encodeBytes32String(_orderId));
+  const transaction = await contract.checkOut(encodeBytes32String(_orderId), _tokenId);
   return transaction;
 }

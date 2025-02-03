@@ -104,9 +104,10 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     }
   };
 
-  const handleCheckOut = async (orderId: string) => {
+  const handleCheckOut = async (orderId: string, tokenId: number) => {
+    setLoading(true);
     try {
-      const tx = await checkOut(orderId, walletProvider);
+      const tx = await checkOut(orderId, tokenId, walletProvider);
       const receipt = await tx.wait();
       if (receipt) {
         setUpdate(!update);
@@ -124,9 +125,9 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     setLoading(true);
     try {
       const res = await createBooking(
-        "679e2e1a4bb97de7b7bdf518",
-        "679f394bacc25c692c8fa5a1",
-        104,
+        "67a034cc36f13875bf0f4523",
+        "67a037c070678bba78161acf",
+        94,
         address!,
         Math.floor(new Date().getTime() / 1000),
         Math.floor(new Date().getTime() / 1000) + 1 * 24 * 60 * 60,
@@ -134,9 +135,9 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
       );
       if (res?.status == 201) {
         const tx = await reserve(
-          "679e2e1a4bb97de7b7bdf518",
+          "67a034cc36f13875bf0f4523",
           res.data.booking._id,
-          104,
+          94,
           1,
           Math.floor(new Date().getTime() / 1000),
           walletProvider
@@ -200,18 +201,18 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   <p className="text-sm text-gray-500">
                     User: {item.userAccount}
                   </p>
-                  <p className="text-primary font-bold">
-                    Token ID: {item.tokenId}
-                  </p>
                   <p className="text-sm text-gray-500">
                     Stays duration: {item.durationInDays} day(s)
                   </p>
                   <p className="text-sm text-gray-500">
-                    Check-in: {format(new Date(item.checkIn * 1000), "PPpp")}
+                    {`Check-in schedule: ${format(
+                      new Date(item.checkIn * 1000),
+                      "EEEE, dd MMMM yyyy"
+                    )}`}
                   </p>
                   {item.alreadyCheckOut && (
                     <p className="text-sm text-gray-500">
-                      Check-out:{" "}
+                      Check-out at:{" "}
                       {format(new Date(item.checkOut * 1000), "PPpp")}
                     </p>
                   )}
@@ -225,12 +226,20 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                       <CheckCircle size={16} className="mr-1" /> Check-in
                     </Button>
                   )}
-                  {item.alreadyCheckIn && (
+                  {item.alreadyCheckIn && !item.alreadyCheckOut && (
                     <Button
-                      onClick={() => handleCheckOut(item.id)}
+                      onClick={() => handleCheckOut(item.id, item.tokenId)}
                       className="bg-darkOrange text-white flex items-center"
                     >
                       <Luggage size={16} className="mr-1" /> Check-out
+                    </Button>
+                  )}
+                  {item.alreadyCheckIn && item.alreadyCheckOut && (
+                    <Button
+                      onClick={() => handleCheckOut(item.id, item.tokenId)}
+                      className="bg-brightYellow text-white flex items-center"
+                    >
+                      <Luggage size={16} className="mr-1" /> Rate
                     </Button>
                   )}
                   <Button
