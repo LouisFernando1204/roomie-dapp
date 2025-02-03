@@ -45,8 +45,8 @@ createAppKit({
 function App() {
   const [isUser, setIsUser] = useState(true);
   const [accommodation, setAccommodation] = useState<Accommodation>();
-  const [loading, setLoading] = useState(true)
-  const [lodgeUpdate, setLodgeUpdate] = useState(false)
+  const [loading, setLoading] = useState(true);
+  const [lodgeUpdate, setLodgeUpdate] = useState(false);
 
   const navigate = useNavigate();
 
@@ -63,11 +63,11 @@ function App() {
   }, [isUser, isConnected]);
 
   useEffect(() => {
-    fetchAccomodations()
-  }, [lodgeUpdate, isConnected])
+    fetchAccomodations();
+  }, [lodgeUpdate, isConnected]);
 
   const fetchAccomodations = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await getAccommodations();
       if (res) {
@@ -78,9 +78,8 @@ function App() {
       }
     } catch (error) {
       console.log(error);
-    }
-    finally {
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,9 +87,8 @@ function App() {
     console.log(accommodation);
   }, [accommodation]);
 
-
   if (loading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   return (
@@ -107,9 +105,23 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route
             path="/room"
-            element={<RoomList walletProvider={walletProvider} accommodation={accommodation} isConnected={ isConnected } />}
+            element={
+              <RoomList
+                walletProvider={walletProvider}
+                accommodation={accommodation}
+                isConnected={isConnected}
+              />
+            }
           />
-          <Route path="/order" element={<OrderList />} />
+          <Route
+            path="/order"
+            element={
+              <OrderList
+                accommodation={accommodation}
+                walletProvider={walletProvider}
+              />
+            }
+          />
           <Route
             path="/lodge_profile"
             element={
@@ -125,7 +137,12 @@ function App() {
               />
             }
           />
-          <Route path="/history" element={ <HistoryPage walletProvider={walletProvider} address={address} /> } />
+          <Route
+            path="/history"
+            element={
+              <HistoryPage walletProvider={walletProvider} address={address} />
+            }
+          />
           <Route path="/court" element={<Court />} />
         </Routes>
       </div>

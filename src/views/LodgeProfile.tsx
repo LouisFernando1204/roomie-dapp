@@ -90,18 +90,11 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
           res!.data.accommodation._id,
           walletProvider
         );
-        const receipt = await tx.wait();
-        if (receipt) {
-          setLodgeUpdate(!lodgeUpdate);
-          if (!loading) {
-            setTimeout(() => {
-              successModal("Registered Successfully!", tx.hash);
-            }, 2500);
-          }
-        }
-        else {
-          errorScenario();
-        }
+        await tx.wait();
+        setLodgeUpdate(!lodgeUpdate);
+        setTimeout(() => {
+          successModal("Registered Successfully!", tx.hash);
+        }, 2500);
       }
       else {
         errorScenario();

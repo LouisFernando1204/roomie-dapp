@@ -10,10 +10,11 @@ import { Booking } from "../model/booking";
 import { LoadingScreen } from "../components/ui/loading-screen";
 import { checkIn, checkOut, reserve } from "../services/customer";
 import { normalModal, successModal } from "../utils/helper";
-import { orderDetail } from "../services/public";
+import { orderDetail, tokenDetail } from "../services/public";
 import { EmptyPage } from "./EmptyPage";
 import { getAccommodations } from "../server/accommodation";
 import { Accommodation } from "../model/accommodation";
+import { formatEther, parseEther } from "ethers";
 
 interface HistoryPageProps {
   walletProvider: any;
@@ -46,15 +47,23 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
         const updatedBookings = await Promise.all(
           filtered.map(async (book: Booking, _: any) => {
             const data = await orderDetail(book.id);
+            const token = await tokenDetail(book.tokenId);
             const accommodations = await getAccommodations();
             const filteredAccommodation = accommodations.find(
               (accommodation: Accommodation) =>
                 accommodation.id === book.accommodationId
             );
+
+            const payment =
+              BigInt(parseEther(token.tokenPricePerNight.toString())) *
+              BigInt(book.durationInDays);
+
             return {
               ...book,
               alreadyCheckIn: data.customerAlreadyCheckIn,
               alreadyCheckOut: data.customerAlreadyCheckOut,
+              payment: Number(formatEther(payment)),
+              checkOut: data.checkOutTimestamp,
               accommodationName: filteredAccommodation.accommodationName,
             };
           })
@@ -89,15 +98,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     setLoading(true);
     try {
       const tx = await checkIn(orderId, walletProvider);
-      const receipt = await tx.wait();
-      if (receipt) {
-        setUpdate(!update);
-        setTimeout(() => {
-          successModal("Check in successfully!", tx.hash);
-        }, 2500);
-      } else {
-        errorScenario("check in");
-      }
+      await tx.wait();
+      setUpdate(!update);
+      setTimeout(() => {
+        successModal("Check in successfully!", tx.hash);
+      }, 2500);
     } catch (error) {
       console.log(error);
       errorScenario("check in");
@@ -108,13 +113,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     setLoading(true);
     try {
       const tx = await checkOut(orderId, tokenId, walletProvider);
-      const receipt = await tx.wait();
-      if (receipt) {
-        setUpdate(!update);
-        setTimeout(() => {
-          successModal("Check out successfully!", tx.hash);
-        }, 2500);
-      }
+      await tx.wait();
+      setUpdate(!update);
+      setTimeout(() => {
+        successModal("Check out successfully!", tx.hash);
+      }, 2500);
     } catch (error) {
       console.log(error);
       errorScenario("check out");
@@ -142,15 +145,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
           Math.floor(new Date().getTime() / 1000),
           walletProvider
         );
-        const receipt = await tx.wait();
-        if (receipt) {
-          setLoading(false);
-          setTimeout(() => {
-            successModal("Book Placed Successfully!", tx.hash);
-          }, 2000);
-        } else {
-          errorScenarioCreateBooking();
-        }
+        await tx.wait();
+        setLoading(false);
+        setTimeout(() => {
+          successModal("Book Placed Successfully!", tx.hash);
+        }, 2000);
       } else {
         errorScenarioCreateBooking();
       }
@@ -195,11 +194,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   <p className="text-almostBlack font-semibold">
                     Order ID: {item.id}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Accommodation: {item.accommodationName}
+                  <p className="text-darkOrange font-semibold">
+                    Payment: {item.payment} ETH
                   </p>
                   <p className="text-sm text-gray-500">
-                    User: {item.userAccount}
+                    Accommodation: {item.accommodationName}
                   </p>
                   <p className="text-sm text-gray-500">
                     Stays duration: {item.durationInDays} day(s)
@@ -213,7 +212,10 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   {item.alreadyCheckOut && (
                     <p className="text-sm text-gray-500">
                       Check-out at:{" "}
-                      {format(new Date(item.checkOut * 1000), "PPpp")}
+                      {format(
+                        new Date(item.checkOut * 1000),
+                        "EEEE, dd MMMM yyyy"
+                      )}
                     </p>
                   )}
                 </CardContent>

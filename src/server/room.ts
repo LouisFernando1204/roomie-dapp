@@ -41,6 +41,18 @@ export async function getRooms() {
   }
 }
 
+export async function getRoomsById(_id: string) {
+  try {
+    const res = await axios.get(`${BACKEND_API_URL}rooms/${_id}`)
+    console.log(res.data)
+    return res.data
+  }
+  catch (error) {
+    console.log(error)
+    return
+  }
+}
+
 function structuredRooms(rooms: any) {
   return rooms.map((room: any) => ({
     id: room._id,

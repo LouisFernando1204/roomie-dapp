@@ -77,16 +77,12 @@ const RoomList: React.FC<RoomListProps> = ({
         "",
         walletProvider
       );
-      const receipt = await tx.wait();
-      if (receipt) {
-        setUpdate(!update);
-        if (!loading) {
-          setTimeout(() => {
-            successModal("Minted Successfully!", tx.hash);
-          }, 2000);
-        }
-      } else {
-        errorScenario();
+      await tx.wait();
+      setUpdate(!update);
+      if (!loading) {
+        setTimeout(() => {
+          successModal("Minted Successfully!", tx.hash);
+        }, 2000);
       }
     } catch (error) {
       console.log(error);
@@ -225,7 +221,13 @@ const RoomList: React.FC<RoomListProps> = ({
                       Images
                     </button>
                     <button className="px-4 py-2 bg-brightYellow text-white hover:bg-darkYellow rounded-lg text-sm">
-                      <a href={room.tokenMetadata} target="_blank" rel="noopener noreferrer">View Metadata</a>
+                      <a
+                        href={room.tokenMetadata}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        View Metadata
+                      </a>
                     </button>
                   </td>
                   <td
