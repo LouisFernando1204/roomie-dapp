@@ -19,13 +19,22 @@ const Navbar: React.FC<NavbarProps> = ({
   isUser,
 }) => {
   return (
-    <div className="-mx-10 text-darkOrange border-b border-n-6 shadow-xl">
-      <nav className="bg-secondary fixed w-full z-20 top-0 start-0 border-b border-amber-700">
+    <div className="w-full text-darkOrange border-b border-n-6 shadow-xl">
+      <nav className="bg-secondary fixed w-full z-20 top-0 start-0 border-b border-lightGray">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-6 md:py-4">
           {/* Logo */}
-          <a href="/" className="flex flex-row gap-2 items-center space-x-3 rtl:space-x-reverse">
-            <img src="\public\images\roomie_logo.jpg" alt="plug" className="h-12" />
-            <span className="hidden md:block self-center text-2xl font-semibold whitespace-nowrap italic">Roomie</span>
+          <a
+            href="/"
+            className="flex flex-row gap-2 items-center space-x-3 rtl:space-x-reverse"
+          >
+            <img
+              src="\images\roomie_logo.jpg"
+              alt="plug"
+              className="h-12"
+            />
+            <span className="hidden md:block self-center text-2xl font-semibold whitespace-nowrap italic">
+              Roomie
+            </span>
           </a>
 
           {/* Mobile Menu Button */}
@@ -84,28 +93,28 @@ const Navbar: React.FC<NavbarProps> = ({
             className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
             id="navbar-sticky" // Matches the data-collapse-toggle value
           >
-            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-gray-100 rounded-lg bg-secondary md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
+            <ul className="flex flex-col p-4 md:p-0 mt-4 font-medium border border-primary rounded-lg bg-secondary md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0">
               {isUser
                 ? userNavList.map((item, index) => (
-                  <li key={index}>
-                    <Link
-                      to={item.url}
-                      className="block py-2 px-3 text-darkOrange rounded hover:bg-brightYellow md:hover:bg-transparent md:hover:text-brightYellow md:p-0"
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                ))
+                    <li key={index}>
+                      <Link
+                        to={item.url}
+                        className="block py-2 px-3 text-darkOrange rounded font-semibold hover:bg-brightYellow md:hover:bg-transparent md:hover:text-brightYellow md:p-0"
+                      >
+                        {item.title}
+                      </Link>
+                    </li>
+                  ))
                 : adminNavList.map((item, index) => (
-                  <li key={index}>
-                    <Link
-                      to={item.url}
-                      className="block py-2 px-3 text-darkOrange rounded hover:bg-amber-900 md:hover:bg-transparent md:hover:text-brightYellow md:p-0"
-                    >
-                      {item.title}
-                    </Link>
-                  </li>
-                ))}
+                    <li key={index}>
+                      <Link
+                        to={item.url}
+                        className="block py-2 px-3 text-darkOrange rounded hover:bg-amber-900 md:hover:bg-transparent md:hover:text-brightYellow md:p-0"
+                      >
+                        {item.title}
+                      </Link>
+                    </li>
+                  ))}
               <li>
                 <h1
                   onClick={() => setIsUser(!isUser)}

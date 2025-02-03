@@ -40,7 +40,7 @@ function App() {
   useEffect(() => { }, [isUser, isConnected]);
 
   return (
-    <div className="mx-12 font-lato">
+    <div className="font-lato">
       <Navbar
         connectedAddress={address}
         setIsUser={setIsUser}
@@ -49,7 +49,7 @@ function App() {
       />
 
       {/* Sesuaikan nama / path dgn yang di utils/list.ts */}
-      <div className="mt-32">
+      <div className="">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/room" element={<RoomList />} />
