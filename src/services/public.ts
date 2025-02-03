@@ -29,6 +29,21 @@ export async function voteOnCase(
   return transaction;
 }
 
+export async function withdrawForCaseWinner(
+  _caseId: string,
+  _orderId: string,
+  _tokenId: string,
+  _walletProvider: any
+) {
+  const contract = await getContractWithSigner(_walletProvider);
+  const transaction = await contract.withdrawForCaseWinner(
+    encodeBytes32String(_caseId),
+    encodeBytes32String(_orderId),
+    _tokenId
+  );
+  return transaction;
+}
+
 export async function uri(_tokenId: number) {
   const contract = await getContractWithoutSigner();
   const uri = await contract.uri(_tokenId);
