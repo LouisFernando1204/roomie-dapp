@@ -6,5 +6,5 @@ export const userNavList = [
 export const adminNavList = [
   { title: "Room", url: "/room" },
   { title: "Order", url: "/order" },
-  { title: "Lodge Profile", url: "/lodge_profile" },
+  { title: "Accommodation Profile", url: "/accommodation_profile" },
 ];

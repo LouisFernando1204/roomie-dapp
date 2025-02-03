@@ -62,6 +62,7 @@ export async function getAccommodations() {
 function structuredAccommodations(accommodations: any) {
   return accommodations.map((accommodation: any) => ({
     id: accommodation._id,
+    rating: 0,
     accommodationHost: accommodation.accommodationHost,
     accommodationName: accommodation.accommodationName,
     accommodationType: accommodation.accommodationType,

@@ -22,6 +22,7 @@ import { getAccommodations } from "./server/accommodation";
 import { Accommodation } from "./model/accommodation";
 import { LoadingScreen } from "./components/ui/loading-screen";
 import HistoryPage from "./views/History";
+import { getAccommodationRating } from "./server/rating";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -47,7 +48,6 @@ function App() {
   const [accommodation, setAccommodation] = useState<Accommodation>();
   const [loading, setLoading] = useState(true);
   const [lodgeUpdate, setLodgeUpdate] = useState(false);
-
   const navigate = useNavigate();
 
   const { open } = useAppKit();
@@ -74,7 +74,19 @@ function App() {
         const accommodation = res.find(
           (item: Accommodation) => item.accommodationHost === address
         );
-        setAccommodation(accommodation);
+        if (accommodation) {
+          const rating = await getAccommodationRating(accommodation.id)
+          if (rating != undefined) {
+            const updateAccommodation = {
+              ...accommodation,
+              rating: rating
+            }
+            setAccommodation(updateAccommodation);
+          }
+          else {
+            setAccommodation(accommodation)
+          }
+        }
       }
     } catch (error) {
       console.log(error);
@@ -123,11 +135,10 @@ function App() {
             }
           />
           <Route
-            path="/lodge_profile"
+            path="/accommodation_profile"
             element={
               <LodgeProfile
                 connectedAccount={address}
-                isConnected={isConnected}
                 walletProvider={walletProvider}
                 accommodation={accommodation}
                 setLodgeUpdate={setLodgeUpdate}

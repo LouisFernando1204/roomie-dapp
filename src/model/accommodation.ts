@@ -1,5 +1,6 @@
 export interface Accommodation {
     id: string,
+    rating: number,
     accommodationHost: string,
     accommodationName: string,
     accommodationType: string,
