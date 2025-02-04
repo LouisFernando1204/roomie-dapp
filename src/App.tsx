@@ -159,7 +159,7 @@ function App() {
               <HistoryPage walletProvider={walletProvider} address={address} />
             }
           />
-          <Route path="/court" element={<Court />} />
+          <Route path="/court" element={<Court accommodation={accommodation} address={address} loading={loading} setLoading={setLoading} />} />
         </Routes>
       </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />
