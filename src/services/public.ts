@@ -1,16 +1,53 @@
 import { decodeBytes32String, encodeBytes32String, formatEther } from "ethers";
-import { getContractWithoutSigner } from "./connector";
+import { getContractWithoutSigner, getContractWithSigner } from "./connector";
+
+export async function openCase(
+  _caseId: string,
+  _orderId: string,
+  _lodgeId: string,
+  _walletProvider: any
+) {
+  const contract = await getContractWithSigner(_walletProvider);
+  const transaction = await contract.openCase(
+    encodeBytes32String(_caseId),
+    encodeBytes32String(_orderId),
+    encodeBytes32String(_lodgeId)
+  );
+  return transaction;
+}
+
+export async function voteOnCase(
+  _caseId: string,
+  _side: number,
+  _walletProvider: any
+) {
+  const contract = await getContractWithSigner(_walletProvider);
+  const transaction = await contract.voteOnCase(
+    encodeBytes32String(_caseId),
+    _side
+  );
+  return transaction;
+}
+
+export async function withdrawForCaseWinner(
+  _caseId: string,
+  _orderId: string,
+  _tokenId: string,
+  _walletProvider: any
+) {
+  const contract = await getContractWithSigner(_walletProvider);
+  const transaction = await contract.withdrawForCaseWinner(
+    encodeBytes32String(_caseId),
+    encodeBytes32String(_orderId),
+    _tokenId
+  );
+  return transaction;
+}
 
 export async function uri(_tokenId: number) {
   const contract = await getContractWithoutSigner();
   const uri = await contract.uri(_tokenId);
   return uri;
-}
-
-export async function balanceOf(_account: string, _tokenId: number) {
-  const contract = await getContractWithoutSigner();
-  const balance = await contract.balanceOf(_account, _tokenId);
-  return parseInt(balance);
 }
 
 export async function orderDetail(_orderId: string) {
@@ -31,12 +68,6 @@ export async function caseDetail(_caseId: string) {
   return structuredCaseDetail(caseDetail);
 }
 
-export async function lodgeHost(_lodgeId: string) {
-  const contract = await getContractWithoutSigner();
-  const lodgeHost = await contract.lodgeHost();
-  return lodgeHost.toString();
-}
-
 function structuredOrderDetail(_orderDetail: any) {
   const detail = {
     customerAddress: _orderDetail[0].toString(),
@@ -48,7 +79,6 @@ function structuredOrderDetail(_orderDetail: any) {
     customerAlreadyCheckIn: Boolean(_orderDetail[6]),
     customerAlreadyCheckOut: Boolean(_orderDetail[7]),
   };
-  console.log(detail)
   return detail;
 }
 
@@ -57,7 +87,7 @@ function structuredTokenDetail(_tokenDetail: any) {
     lodgeToken: decodeBytes32String(_tokenDetail[0]),
     tokenPricePerNight: formatEther(_tokenDetail[1]),
     tokenSupply: parseInt(_tokenDetail[2]),
-    tokenBurn: parseInt(_tokenDetail[3])
+    tokenBurn: parseInt(_tokenDetail[3]),
   };
   return detail;
 }
@@ -67,7 +97,7 @@ function structuredCaseDetail(_caseDetail: any) {
     problematicOrder: _caseDetail[0],
     totalHostVote: parseInt(_caseDetail[1]),
     totalCustomerVote: parseInt(_caseDetail[2]),
-    caseCreatedTimestamp: parseInt(_caseDetail[3])
-  }
+    caseCreatedTimestamp: parseInt(_caseDetail[3]),
+  };
   return detail;
 }

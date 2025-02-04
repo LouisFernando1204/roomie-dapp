@@ -13,7 +13,6 @@ import { pinata } from "../global/global";
 
 interface LodgeProfileProps {
   connectedAccount: string | undefined;
-  isConnected: boolean;
   walletProvider: any;
   accommodation: Accommodation | undefined;
   lodgeUpdate: boolean;
@@ -24,7 +23,6 @@ interface LodgeProfileProps {
 
 export const LodgeProfile: React.FC<LodgeProfileProps> = ({
   connectedAccount,
-  isConnected,
   walletProvider,
   accommodation,
   setLodgeUpdate,
@@ -37,7 +35,7 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
     "mt-2 p-4 w-full border-2 rounded-lg focus:border-primary focus:outline-none";
 
   const [id, setId] = useState<string>("-");
-
+  const [rating, setRating] = useState<number>(0);
   const [accommodationName, setAccommodationName] = useState<string>("");
   const [accommodationType, setAccommodationType] = useState<string>("");
   const [address, setAddress] = useState<string>("");
@@ -57,6 +55,7 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
   };
 
   useEffect(() => {
+    console.log(loading)
     if (accommodation) {
       setId(accommodation.id);
       setAccommodationName(accommodation.accommodationName);
@@ -64,6 +63,8 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
       setAddress(accommodation.address);
       setLogoImageUrl(accommodation.logoImageUrl);
       setCoverImageUrl(accommodation.coverImageUrl);
+      setRating(accommodation.rating)
+
     } else {
       normalModal(
         "info",
@@ -72,8 +73,6 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
       );
     }
   }, [accommodation]);
-
-  // useEffect(() => {}, [id]);
 
   const registerNewLodge = async () => {
     setLoading(true);
@@ -93,20 +92,12 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
           res!.data.accommodation._id,
           walletProvider
         );
-        const receipt = await tx.wait();
-        if (receipt) {
-          setLodgeUpdate(!lodgeUpdate);
-          if (!loading) {
-            setTimeout(() => {
-              successModal("Registered Successfully!", tx.hash);
-            }, 2500);
-          }
-        }
-        else {
-          errorScenario();
-        }
-      }
-      else {
+        await tx.wait();
+        setLodgeUpdate(!lodgeUpdate);
+        setTimeout(() => {
+          successModal("Registered Successfully!", tx.hash);
+        }, 2500);
+      } else {
         errorScenario();
       }
     } catch (error) {
@@ -330,7 +321,7 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
                     <input
                       type="text"
                       className={inputStyling}
-                      placeholder="0"
+                      placeholder={`${rating}`}
                       disabled
                     />
                   </div>

@@ -23,6 +23,7 @@ import { getAccommodations } from "./server/accommodation";
 import { Accommodation } from "./model/accommodation";
 import { LoadingScreen } from "./components/ui/loading-screen";
 import HistoryPage from "./views/History";
+import { getAccommodationRating } from "./server/rating";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -46,9 +47,8 @@ createAppKit({
 function App() {
   const [isUser, setIsUser] = useState(true);
   const [accommodation, setAccommodation] = useState<Accommodation>();
-  const [loading, setLoading] = useState(true)
-  const [lodgeUpdate, setLodgeUpdate] = useState(false)
-
+  const [loading, setLoading] = useState(true);
+  const [lodgeUpdate, setLodgeUpdate] = useState(false);
   const navigate = useNavigate();
 
   const { open } = useAppKit();
@@ -64,24 +64,35 @@ function App() {
   }, [isUser, isConnected]);
 
   useEffect(() => {
-    fetchAccomodations()
-  }, [lodgeUpdate, isConnected])
+    fetchAccomodations();
+  }, [lodgeUpdate, isConnected]);
 
   const fetchAccomodations = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
       const res = await getAccommodations();
       if (res) {
         const accommodation = res.find(
           (item: Accommodation) => item.accommodationHost === address
         );
-        setAccommodation(accommodation);
+        if (accommodation) {
+          const rating = await getAccommodationRating(accommodation.id)
+          if (rating != undefined) {
+            const updateAccommodation = {
+              ...accommodation,
+              rating: rating
+            }
+            setAccommodation(updateAccommodation);
+          }
+          else {
+            setAccommodation(accommodation)
+          }
+        }
       }
     } catch (error) {
       console.log(error);
-    }
-    finally {
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -89,9 +100,8 @@ function App() {
     console.log(accommodation);
   }, [accommodation]);
 
-
   if (loading) {
-    return <LoadingScreen />
+    return <LoadingScreen />;
   }
 
   return (
@@ -108,15 +118,28 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route
             path="/room"
-            element={<RoomList walletProvider={walletProvider} accommodation={accommodation} isConnected={ isConnected } />}
+            element={
+              <RoomList
+                walletProvider={walletProvider}
+                accommodation={accommodation}
+                isConnected={isConnected}
+              />
+            }
           />
-          <Route path="/order" element={<OrderList />} />
           <Route
-            path="/lodge_profile"
+            path="/order"
+            element={
+              <OrderList
+                accommodation={accommodation}
+                walletProvider={walletProvider}
+              />
+            }
+          />
+          <Route
+            path="/accommodation_profile"
             element={
               <LodgeProfile
                 connectedAccount={address}
-                isConnected={isConnected}
                 walletProvider={walletProvider}
                 accommodation={accommodation}
                 setLodgeUpdate={setLodgeUpdate}
@@ -130,6 +153,13 @@ function App() {
           <Route path="/court" element={<Court accommodation={accommodation} address={address} loading={loading}
                 setLoading={setLoading} />} />
           <Route path="/court/:id" element={<CourtDetail />} />
+          <Route
+            path="/history"
+            element={
+              <HistoryPage walletProvider={walletProvider} address={address} />
+            }
+          />
+          <Route path="/court" element={<Court />} />
         </Routes>
       </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />

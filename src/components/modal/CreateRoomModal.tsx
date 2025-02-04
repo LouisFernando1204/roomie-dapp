@@ -153,8 +153,8 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       name: roomType,
       token_id: parseInt(tokenId),
       price_per_night_in_eth: parseFloat(tokenPrice),
-      lodge_id: accommodation!.id,
-      lodge_name: accommodation!.accommodationName,
+      accommodation_id: accommodation!.id,
+      accommodation_name: accommodation!.accommodationName,
       image: imageUrl,
       description: roomDescription,
       attributes: [

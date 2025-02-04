@@ -13,10 +13,13 @@ import { Booking } from "../model/booking";
 import { LoadingScreen } from "../components/ui/loading-screen";
 import { checkIn, checkOut, reserve } from "../services/customer";
 import { normalModal, successModal } from "../utils/helper";
-import { orderDetail } from "../services/public";
+import { orderDetail, tokenDetail } from "../services/public";
 import { EmptyPage } from "./EmptyPage";
 import { getAccommodations } from "../server/accommodation";
 import { Accommodation } from "../model/accommodation";
+import { formatEther, parseEther } from "ethers";
+import { createRating } from "../server/rating";
+import { useNavigate } from "react-router-dom";
 
 interface HistoryPageProps {
   walletProvider: any;
@@ -28,6 +31,8 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
   address,
 }) => {
   const [bookingsHistory, setBookingsHistory] = useState<Booking[]>([]);
+  const [selectedBooking, setSelectedBooking] = useState<Booking>();
+  const [selectedRating, setSelectedRating] = useState<number>(0);
 
   const [loading, setLoading] = useState(true);
   const [selectedNFT, setSelectedNFT] = useState<{
@@ -37,6 +42,18 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [update, setUpdate] = useState(false);
   const currentDate = Math.floor(Date.now() / 1000);
+
+  const [showRateModal, setShowRateModal] = useState(false);
+  const navigate = useNavigate();
+
+  const openModal = (book: Booking) => {
+    setSelectedBooking(book);
+    setShowRateModal(true);
+  };
+
+  const closeModal = () => {
+    setShowRateModal(false);
+  };
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -49,15 +66,23 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
         const updatedBookings = await Promise.all(
           filtered.map(async (book: Booking, _: any) => {
             const data = await orderDetail(book.id);
+            const token = await tokenDetail(book.tokenId);
             const accommodations = await getAccommodations();
             const filteredAccommodation = accommodations.find(
               (accommodation: Accommodation) =>
                 accommodation.id === book.accommodationId
             );
+
+            const payment =
+              BigInt(parseEther(token.tokenPricePerNight.toString())) *
+              BigInt(book.durationInDays);
+
             return {
               ...book,
               alreadyCheckIn: data.customerAlreadyCheckIn,
               alreadyCheckOut: data.customerAlreadyCheckOut,
+              payment: Number(formatEther(payment)),
+              checkOut: data.checkOutTimestamp,
               accommodationName: filteredAccommodation.accommodationName,
             };
           })
@@ -84,6 +109,41 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     }
   };
 
+  const handleRating = async () => {
+    closeModal();
+    setLoading(true);
+    try {
+      const res = await createRating(
+        selectedBooking!.accommodationId,
+        address!,
+        selectedRating
+      );
+      if (res?.status == 201) {
+        normalModal(
+          "success",
+          "Rated Successfully!",
+          "Your feedback is valuable. Thank you for rating!"
+        );
+        navigate("/");
+      } else {
+        normalModal(
+          "error",
+          "Oops...",
+          "Error while give a rating. Please try again later!"
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      normalModal(
+        "error",
+        "Oops...",
+        "Error while give a rating. Please try again later!"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchBookings();
   }, [update]);
@@ -92,15 +152,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     setLoading(true);
     try {
       const tx = await checkIn(orderId, walletProvider);
-      const receipt = await tx.wait();
-      if (receipt) {
-        setUpdate(!update);
-        setTimeout(() => {
-          successModal("Check in successfully!", tx.hash);
-        }, 2500);
-      } else {
-        errorScenario("check in");
-      }
+      await tx.wait();
+      setUpdate(!update);
+      setTimeout(() => {
+        successModal("Check in successfully!", tx.hash);
+      }, 2500);
     } catch (error) {
       console.log(error);
       errorScenario("check in");
@@ -111,13 +167,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     setLoading(true);
     try {
       const tx = await checkOut(orderId, tokenId, walletProvider);
-      const receipt = await tx.wait();
-      if (receipt) {
-        setUpdate(!update);
-        setTimeout(() => {
-          successModal("Check out successfully!", tx.hash);
-        }, 2500);
-      }
+      await tx.wait();
+      setUpdate(!update);
+      setTimeout(() => {
+        successModal("Check out successfully!", tx.hash);
+      }, 2500);
     } catch (error) {
       console.log(error);
       x("check out");
@@ -145,15 +199,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
           Math.floor(new Date().getTime() / 1000),
           walletProvider
         );
-        const receipt = await tx.wait();
-        if (receipt) {
-          setLoading(false);
-          setTimeout(() => {
-            successModal("Book Placed Successfully!", tx.hash);
-          }, 2000);
-        } else {
-          errorScenarioCreateBooking();
-        }
+        await tx.wait();
+        setLoading(false);
+        setTimeout(() => {
+          successModal("Book Placed Successfully!", tx.hash);
+        }, 2000);
       } else {
         errorScenarioCreateBooking();
       }
@@ -198,11 +248,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   <p className="text-almostBlack font-semibold">
                     Order ID: {item.id}
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Accommodation: {item.accommodationName}
+                  <p className="text-darkOrange font-semibold">
+                    Payment: {item.payment} ETH
                   </p>
                   <p className="text-sm text-gray-500">
-                    User: {item.userAccount}
+                    Accommodation: {item.accommodationName}
                   </p>
                   <p className="text-sm text-gray-500">
                     Stays duration: {item.durationInDays} day(s)
@@ -216,7 +266,10 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   {item.alreadyCheckOut && (
                     <p className="text-sm text-gray-500">
                       Check-out at:{" "}
-                      {format(new Date(item.checkOut * 1000), "PPpp")}
+                      {format(
+                        new Date(item.checkOut * 1000),
+                        "EEEE, dd MMMM yyyy"
+                      )}
                     </p>
                   )}
                 </CardContent>
@@ -239,7 +292,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   )}
                   {item.alreadyCheckIn && item.alreadyCheckOut && (
                     <Button
-                      onClick={() => handleCheckOut(item.id, item.tokenId)}
+                      onClick={() => openModal(item)}
                       className="bg-brightYellow text-white flex items-center"
                     >
                       <Luggage size={16} className="mr-1" /> Rate
@@ -258,6 +311,54 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
               </Card>
             </motion.div>
           ))}
+          {selectedBooking && showRateModal && (
+            <div
+              className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+              onClick={closeModal}
+            >
+              <div
+                className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex justify-between items-center p-4 border-b">
+                  <h3 className="text-xl font-semibold">
+                    Rate your experience
+                  </h3>
+                  <button
+                    onClick={closeModal}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    ✕
+                  </button>
+                </div>
+                <div className="col-span-2 flex justify-center items-center">
+                  <div className="flex space-x-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setSelectedRating(star)}
+                        className={`text-4xl lg:text-6xl my-8 ${
+                          selectedRating >= star
+                            ? "text-yellow-500"
+                            : "text-gray-300"
+                        }`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                  </div>
+                </div>{" "}
+                <div className="p-3">
+                  <button
+                    onClick={handleRating}
+                    className="p-3 mb-2 bg-brightYellow w-full text-secondary rounded-xl mt-6 font-semibold shadow-md"
+                  >
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       ) : (
         <div className="mt-20">

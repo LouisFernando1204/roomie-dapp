@@ -9,5 +9,6 @@ export const adminNavList = [
   { title: "Order", url: "/order" },
   { title: "Token", url: "/token" },
   { title: "Lodge Profile", url: "/lodge_profile" },
-  { title: "Court", url: "/court" }
+  { title: "Court", url: "/court" },
+  { title: "Accommodation Profile", url: "/accommodation_profile" },
 ];
