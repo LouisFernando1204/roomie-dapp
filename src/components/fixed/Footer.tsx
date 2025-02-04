@@ -10,7 +10,7 @@ export const Footer: React.FC<FooterProps> = ({ isUser, setIsUser }) => {
   const role = isUser ? "Admin" : "User";
 
   return (
-    <footer className="bg-darkOrange shadow-md text-secondary -mx-12 py-4 mt-auto">
+    <footer className="bg-darkOrange shadow-md text-secondary py-4 mt-auto">
       <ul className="text-md flex items-center justify-center flex-col gap-7 md:flex-row md:gap-12 transition-all duration-500 py-5">
         <li>
           <span>

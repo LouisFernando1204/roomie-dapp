@@ -11,7 +11,8 @@ import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
 import { LodgeProfile } from "./views/LodgeProfile";
-import { Court } from "./views/Court";
+import Court from "./views/Court";
+import CourtDetail from "./views/CourtDetail";
 
 import Home from "./views/Home";
 import RoomList from "./views/RoomListView";
@@ -94,7 +95,7 @@ function App() {
   }
 
   return (
-    <div className="px-4 md:px-12 font-lato bg-amber-100 min-h-screen flex flex-col">
+    <div className="font-lato bg-amber-100 min-h-screen flex flex-col">
       <Navbar
         connectedAddress={address}
         setIsUser={setIsUser}
@@ -102,7 +103,7 @@ function App() {
         handleConnect={open}
       />
 
-      <div className="flex-1 mt-32">
+      <div className="flex-1 mt-32 px-4 md:px-12">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route
@@ -126,7 +127,9 @@ function App() {
             }
           />
           <Route path="/history" element={ <HistoryPage walletProvider={walletProvider} address={address} /> } />
-          <Route path="/court" element={<Court />} />
+          <Route path="/court" element={<Court accommodation={accommodation} address={address} loading={loading}
+                setLoading={setLoading} />} />
+          <Route path="/court/:id" element={<CourtDetail />} />
         </Routes>
       </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />

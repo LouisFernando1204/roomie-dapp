@@ -19,7 +19,7 @@ const Navbar: React.FC<NavbarProps> = ({
   isUser,
 }) => {
   return (
-    <div className="-mx-10 text-darkOrange border-b border-n-6 shadow-xl">
+    <div className="text-darkOrange border-b border-n-6 shadow-xl">
       <nav className="bg-secondary fixed w-full z-20 top-0 start-0 border-b border-amber-700">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-6 md:py-4">
           {/* Logo */}
