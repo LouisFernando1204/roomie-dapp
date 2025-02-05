@@ -31,6 +31,11 @@ export function successModal(title: string, transactionHash: string) {
         ${transactionHash}
       </a>
     </p>`,
+    customClass: {
+      popup: 'swal-modal',
+      confirmButton: 'swal-confirm-button swal-wide-button',
+      actions: 'swal-one-buttons'
+    }
   });
 }
 
@@ -39,5 +44,10 @@ export function normalModal(icon: SweetAlertIcon, title: string, text: string) {
     icon: icon,
     title: title,
     text: text,
+    customClass: {
+      popup: 'swal-modal',
+      confirmButton: 'swal-confirm-button swal-wide-button',
+      actions: 'swal-one-buttons'
+    }
   });
 }

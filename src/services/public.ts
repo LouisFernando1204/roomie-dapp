@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { decodeBytes32String, encodeBytes32String, formatEther } from "ethers";
 import { getContractWithoutSigner, getContractWithSigner } from "./connector";
 
@@ -32,7 +33,7 @@ export async function voteOnCase(
 export async function withdrawForCaseWinner(
   _caseId: string,
   _orderId: string,
-  _tokenId: string,
+  _tokenId: number,
   _walletProvider: any
 ) {
   const contract = await getContractWithSigner(_walletProvider);
@@ -64,7 +65,7 @@ export async function tokenDetail(_tokenId: number) {
 
 export async function caseDetail(_caseId: string) {
   const contract = await getContractWithoutSigner();
-  const caseDetail = await contract.caseDetail(_caseId);
+  const caseDetail = await contract.caseDetail(encodeBytes32String(_caseId));
   return structuredCaseDetail(caseDetail);
 }
 

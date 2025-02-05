@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { BACKEND_API_URL } from "../global/global";
 
@@ -53,6 +54,16 @@ export async function getAccommodations() {
   try {
     const res = await axios.get(`${BACKEND_API_URL}accommodations`);
     return structuredAccommodations(res.data);
+  } catch (error) {
+    console.log(error);
+    return;
+  }
+}
+
+export async function getAccommodationById(_id: string) {
+  try {
+    const res = await axios.get(`${BACKEND_API_URL}accommodations/${_id}`);
+    return res.data;
   } catch (error) {
     console.log(error);
     return;

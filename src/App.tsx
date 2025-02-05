@@ -132,6 +132,7 @@ function App() {
               <OrderList
                 accommodation={accommodation}
                 walletProvider={walletProvider}
+                address={address}
               />
             }
           />
@@ -149,17 +150,9 @@ function App() {
               />
             }
           />
-          <Route path="/history" element={ <HistoryPage walletProvider={walletProvider} address={address} /> } />
-          <Route path="/court" element={<Court accommodation={accommodation} address={address} loading={loading}
-                setLoading={setLoading} />} />
-          <Route path="/court/:id" element={<CourtDetail />} />
-          <Route
-            path="/history"
-            element={
-              <HistoryPage walletProvider={walletProvider} address={address} />
-            }
-          />
-          <Route path="/court" element={<Court accommodation={accommodation} address={address} loading={loading} setLoading={setLoading} />} />
+          <Route path="/history" element={<HistoryPage walletProvider={walletProvider} address={address} accommodation={accommodation} />} />
+          <Route path="/court" element={<Court />} />
+          <Route path="/court/:id" element={<CourtDetail walletProvider={walletProvider} />} />
         </Routes>
       </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />

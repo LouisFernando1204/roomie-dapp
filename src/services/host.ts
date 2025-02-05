@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { encodeBytes32String, parseEther, toUtf8Bytes } from "ethers";
 import { getContractWithSigner } from "./connector";
 import { tokenDetail } from "./public";

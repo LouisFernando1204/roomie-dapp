@@ -10,7 +10,7 @@ export async function createUserCase(
     _caseName: string
 ) {
     try {
-        const res = await axios.post(`${BACKEND_API_URL}cases`, {
+        const res = await axios.post(`${BACKEND_API_URL}cases/user-cases`, {
             userAccount: _userAccount,
             userArgument: _userArgument,
             userEvidence: _userEvidence,
@@ -32,7 +32,7 @@ export async function createAccommodationCase(
     _caseName: string
 ) {
     try {
-        const res = await axios.post(`${BACKEND_API_URL}cases`, {
+        const res = await axios.post(`${BACKEND_API_URL}cases/accommodation-cases`, {
             accommodationId: _accommodationId,
             accommodationArgument: _accommodationArgument,
             accommodationEvidence: _accommodationEvidence,
@@ -66,13 +66,22 @@ export async function getCaseById(_caseId: string) {
     }
 }
 
+export async function getCaseByBookingId(_bookingId: string) {
+    try {
+        const res = await axios.get(`${BACKEND_API_URL}cases/booking/${_bookingId}`);
+        return structuredCase(res.data);
+    } catch (error) {
+        console.log(error);
+        return;
+    }
+}
+
 function structuredCases(cases: any) {
     return cases.map((caseItem: any) => ({
         id: caseItem._id,
         bookingId: caseItem.bookingId,
         name: caseItem.name,
         createdAt: caseItem.createdAt,
-        updatedAt: caseItem.updatedAt,
         userCases: caseItem.userCaseId.map((userCase: any) => ({
             id: userCase._id,
             userAccount: userCase.userAccount,
@@ -89,6 +98,8 @@ function structuredCases(cases: any) {
             createdAt: accommodationCase.createdAt,
             updatedAt: accommodationCase.updatedAt,
         })),
+        totalCustomerVote: 0,
+        totalAccommodationVote: 0
     }));
 }
 
@@ -98,7 +109,6 @@ function structuredCase(caseItem: any) {
         bookingId: caseItem.bookingId,
         name: caseItem.name,
         createdAt: caseItem.createdAt,
-        updatedAt: caseItem.updatedAt,
         userCases: caseItem.userCaseId.map((userCase: any) => ({
             id: userCase._id,
             userAccount: userCase.userAccount,

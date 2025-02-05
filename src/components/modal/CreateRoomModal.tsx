@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from "react";
 import { normalModal, successModal } from "../../utils/helper";
 import { parseEther } from "ethers";
@@ -194,7 +195,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
       <div
         data-aos="zoom-in-up"
         data-aos-anchor-placement="top-bottom"
-        data-aos-duration="500"
+        data-aos-duration="300"
         className="bg-white rounded-xl shadow-xl w-11/12 md:w-2/5 max-h-[90%] py-6 md:py-8 px-4 md:px-6 overflow-y-auto no-scrollbar relative"
       >
         <div className="flex justify-between items-center mb-4 lg:mb-6">
