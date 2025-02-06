@@ -674,7 +674,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                 </li>
                 <hr className="border-t border-gray-300" />
                 <li className="flex justify-between">
-                  <span>Price</span>
+                  <span>Price Per Night</span>
                   <span>{selectedNFT.price_per_night_in_eth}</span>
                 </li>
                 <hr className="border-t border-gray-300" />
