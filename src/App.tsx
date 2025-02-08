@@ -160,7 +160,7 @@ function App() {
             }
           />
           <Route path="/" element={<Home />} />
-          <Route path="/roomdetail" element={<RoomDetail />} />
+          <Route path="/roomdetail/:id" element={<RoomDetail walletProvider={walletProvider} address={ address! } />} />
           <Route path="/court" element={<Court />} />
           <Route
             path="/court/:id"

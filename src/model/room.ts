@@ -1,7 +1,9 @@
 export interface Room {
   id: string;
   tokenId: number;
-  tokenMetadata: string; 
+  tokenMetadata: string;
+  accommodationName: string;
+  address: string;
   accommodationId: string;
   roomType: string;
   roomDescription: string;

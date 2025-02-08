@@ -59,6 +59,8 @@ function structuredRooms(rooms: any) {
     tokenId: room.tokenId,
     tokenMetadata: "",
     accommodationId: room.accommodationId,
+    accommodationName: "",
+    address: "",
     roomType: room.roomType,
     roomDescription: room.roomDescription,
     facilities: room.facilities,

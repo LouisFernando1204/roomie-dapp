@@ -28,6 +28,18 @@ export async function createBooking(
   }
 }
 
+export async function deleteBooking(_id: string) {
+  try {
+    await axios.delete(`${BACKEND_API_URL}bookings`, {
+      data: {
+        id: _id,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function getBookings() {
   try {
     const res = await axios.get(`${BACKEND_API_URL}bookings`);
@@ -52,6 +64,6 @@ function structuredBookings(bookings: any) {
     bookingTimestamp: booking.bookingTimestamp,
     durationInDays: booking.durationInDays,
     alreadyCheckIn: false,
-    alreadyCheckOut: false
+    alreadyCheckOut: false,
   }));
 }

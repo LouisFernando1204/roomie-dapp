@@ -7,10 +7,10 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, Luggage } from "lucide-react";
 import { format } from "date-fns";
-import { createBooking, getBookings } from "../server/booking";
+import { getBookings } from "../server/booking";
 import { Booking } from "../model/booking";
 import { LoadingScreen } from "../components/ui/loading-screen";
-import { checkIn, checkOut, reserve } from "../services/customer";
+import { checkIn, checkOut } from "../services/customer";
 import { normalModal, successModal } from "../utils/helper";
 import { caseDetail, orderDetail, tokenDetail, withdrawForCaseWinner } from "../services/public";
 import { EmptyPage } from "./EmptyPage";
@@ -243,42 +243,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     }
   };
 
-  const onCreate = async () => {
-    setLoading(true);
-    try {
-      const res = await createBooking(
-        "67a30ad95e9ad21eb839873e",
-        "67a394991bf6a7032f11d754",
-        2,
-        address!,
-        Math.floor(new Date().getTime() / 1000),
-        Math.floor(new Date().getTime() / 1000) + 1 * 24 * 60 * 60,
-        1
-      );
-      if (res?.status == 201) {
-        const tx = await reserve(
-          "67a30ad95e9ad21eb839873e",
-          res.data.booking._id,
-          2,
-          1,
-          Math.floor(new Date().getTime() / 1000),
-          walletProvider
-        );
-        await tx.wait();
-        setLoading(false);
-        setUpdate(!update);
-        setTimeout(() => {
-          successModal("Book Placed Successfully!", tx.hash);
-        }, 2000);
-      } else {
-        errorScenarioCreateBooking();
-      }
-    } catch (error) {
-      console.log(error);
-      errorScenarioCreateBooking();
-    }
-  };
-
   const checkCaseStatus = async (bookingId: string): Promise<string> => {
     setLoading(true);
     try {
@@ -377,17 +341,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
         );
       }, 1000);
     }
-  };
-
-  const errorScenarioCreateBooking = () => {
-    setLoading(false);
-    setTimeout(() => {
-      normalModal(
-        "error",
-        "Oops...",
-        `Error while try to process your order. Please try again later!`
-      );
-    }, 1000);
   };
 
   const alreadyLodgeACasePopUp = () => {

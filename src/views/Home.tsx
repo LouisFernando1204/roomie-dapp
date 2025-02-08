@@ -5,11 +5,67 @@ import image1 from "/images/pic_1_upscale.jpeg";
 import image2 from "/images/pic_2_upscale.jpeg";
 import image3 from "/images/pic_3_upscale.jpeg";
 import { roomieAdvantage } from "../utils/list";
+import { getRooms } from "../server/room";
+import { Room } from "../model/room";
+import { LoadingScreen } from "../components/ui/loading-screen";
+import { getAccommodations } from "../server/accommodation";
+import { Accommodation } from "../model/accommodation";
+
+import { Coins, Hotel, MapPinHouse } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const images = [image1, image2, image3];
 
 const Home = () => {
   const [index, setIndex] = useState(0);
+
+  const [homeLoading, setHomeLoading] = useState(false);
+  const [rooms, setRooms] = useState<Room[]>([]);
+
+  const navigate = useNavigate()
+
+  const fetchRooms = async () => {
+    setHomeLoading(true);
+    try {
+      const rooms = await getRooms();
+      const accommodations = await getAccommodations();
+
+      if (rooms && accommodations) {
+        const updatedRooms = await Promise.all(
+          rooms.map(async (room: Room, _: any) => {
+            const filteredAccommodation: Accommodation = accommodations.find(
+              (accommodation: Accommodation) =>
+                accommodation.id === room.accommodationId
+            );
+
+            if (!filteredAccommodation) {
+              console.warn(`Accommodation not found for room ID: ${room.id}`);
+              return {
+                ...room,
+                accommodationName: "Unknown",
+                address: "Unknown",
+              };
+            }
+
+            return {
+              ...room,
+              accommodationName: filteredAccommodation.accommodationName,
+              address: filteredAccommodation.address,
+            };
+          })
+        );
+        setRooms(updatedRooms);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setHomeLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchRooms();
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,17 +74,9 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const listings = Array.from({ length: 8 }, (_, i) => ({
-    id: i + 1,
-    title: `Kamar Nyaman ${i + 1}`,
-    image: `https://source.unsplash.com/400x300/?hotel,room,apartment&random=${i}`,
-    roomType: i % 2 === 0 ? "Deluxe Room" : "Standard Room",
-    price: `$${50 + i * 20}/night`,
-    hotelName: `Hotel Contoh ${i + 1}`,
-    location: "Jakarta, Indonesia",
-    description:
-      "Kamar luas dengan fasilitas lengkap, cocok untuk liburan atau perjalanan bisnis.",
-  }));
+  if (homeLoading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <>
@@ -47,10 +95,8 @@ const Home = () => {
             ))}
           </div>
 
-          {/* Dark overlay for the background image */}
           <div className="absolute top-0 left-0 w-full h-full bg-black opacity-40 z-0"></div>
 
-          {/* Tagline */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -61,7 +107,7 @@ const Home = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 1 }}
-              className="text-2xl md:text-3xl lg:text-5xl font-black"
+              className="text-2xl md:text-3xl lg:text-5xl font-black text-center"
             >
               Web3 Meets Hospitality: Your Stay, Your Way
             </motion.h1>
@@ -102,7 +148,7 @@ const Home = () => {
               transition: { staggerChildren: 0.2 },
             },
           }}
-          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+          className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
         >
           {roomieAdvantage.map((roomie, index) => (
             <motion.div
@@ -112,35 +158,17 @@ const Home = () => {
                 visible: { opacity: 1, scale: 1 },
               }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden"
+              className="cursor-pointer rounded-lg"
             >
-              
-            </motion.div>
-          ))}
-          {listings.map((listing) => (
-            <motion.div
-              key={listing.id}
-              variants={{
-                hidden: { opacity: 0, scale: 0.9 },
-                visible: { opacity: 1, scale: 1 },
-              }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden"
-            >
-              <img
-                src={listing.image}
-                alt={listing.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">{listing.title}</h3>
-                <p className="text-gray-600">
-                  {listing.roomType} - {listing.price}
-                </p>
-                <p className="text-sm text-gray-500">
-                  {listing.hotelName}, {listing.location}
-                </p>
-                <p className="text-sm mt-2">{listing.description}</p>
+              <div
+                key={index}
+                className={`text-center p-6 bg-darkOrange text-secondary backdrop-blur-lg rounded-lg shadow-lg transition-all hover:scale-105 duration-500 ease-in-out hover:shadow-2xl`}
+              >
+                <div className="flex items-center justify-center mb-4">
+                  <roomie.icon size={36} />
+                </div>
+                <h3 className="text-xl font-semibold mb-2">{roomie.header}</h3>
+                <p className="">{roomie.description}</p>
               </div>
             </motion.div>
           ))}
@@ -170,30 +198,47 @@ const Home = () => {
           }}
           className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
         >
-          {listings.map((listing) => (
+          {rooms.map((listing) => (
             <motion.div
               key={listing.id}
               variants={{
                 hidden: { opacity: 0, scale: 0.9 },
                 visible: { opacity: 1, scale: 1 },
               }}
+              onClick={() => {
+                navigate(`/roomdetail/${listing.id}`)
+              }}
               transition={{ duration: 0.5 }}
-              className="bg-white rounded-lg shadow-lg overflow-hidden"
+              className="bg-white rounded-lg shadow-lg overflow-hidden ease-in-out hover:scale-105 duration-200 transition-transform cursor-pointer"
             >
               <img
-                src={listing.image}
-                alt={listing.title}
+                src={listing.imageUrls[0]}
+                alt={listing.roomType}
                 className="w-full h-48 object-cover"
               />
-              <div className="p-4">
-                <h3 className="text-xl font-semibold">{listing.title}</h3>
-                <p className="text-gray-600">
-                  {listing.roomType} - {listing.price}
+              <div className="p-4 flex flex-col space-y-2">
+                <div className="flex justify-between items-center">
+                  <h3 className="text-xl font-semibold">{listing.roomType}</h3>
+                  <div className="flex flex-row items-center space-x-1">
+                    <Coins size={18} color="orange" />
+                    <h3 className="text-md">{listing.price} ETH</h3>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center space-x-1">
+                  <Hotel size={18} color="orange" />
+                  <h3 className="text-sm text-gray-500">
+                    {listing.accommodationName}
+                  </h3>
+                </div>
+                <div className="flex flex-row items-center space-x-1">
+                  <MapPinHouse size={18} color="orange" />
+                  <h3 className="text-sm text-gray-500">
+                    {listing.address}
+                  </h3>
+                </div>
+                <p className="text-sm mt-2 line-clamp-3">
+                  {listing.roomDescription}
                 </p>
-                <p className="text-sm text-gray-500">
-                  {listing.hotelName}, {listing.location}
-                </p>
-                <p className="text-sm mt-2">{listing.description}</p>
               </div>
             </motion.div>
           ))}
