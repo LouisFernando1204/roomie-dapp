@@ -7,7 +7,6 @@ import {
 import { EthersAdapter } from "@reown/appkit-adapter-ethers";
 import { AppKitNetwork, holesky } from "@reown/appkit/networks";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import Navbar from "./components/fixed/Navbar";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
 import { LodgeProfile } from "./views/LodgeProfile";
@@ -24,6 +23,7 @@ import { Accommodation } from "./model/accommodation";
 import { LoadingScreen } from "./components/ui/loading-screen";
 import HistoryPage from "./views/History";
 import { getAccommodationRating } from "./server/rating";
+import RoomDetail from "./views/RoomDetailView";
 // import { CardSection } from "./components/sections/CardSection";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
@@ -159,16 +159,19 @@ function App() {
                 accommodation={accommodation}
               />
             }
-          />
+            />
+            <Route path="/" element={<Home />} />
+            <Route path="/roomdetail" element={<RoomDetail /> } />
           <Route path="/court" element={<Court />} />
           <Route
             path="/court/:id"
             element={<CourtDetail walletProvider={walletProvider} />}
-          />
-        </Routes>
-      </div>
+          /> 
+          </Routes>
       <Footer isUser={isUser} setIsUser={setIsUser} />
-    </div>
+      </div>
+
+      </div>
   );
 }
 
