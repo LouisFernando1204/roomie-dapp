@@ -42,6 +42,18 @@ export async function getRooms() {
   }
 }
 
+export async function deleteRoom(_id: string) {
+  try {
+    await axios.delete(`${BACKEND_API_URL}rooms`, {
+      data: {
+        id: _id,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function getRoomsById(_id: string) {
   try {
     const res = await axios.get(`${BACKEND_API_URL}rooms/${_id}`)

@@ -6,6 +6,7 @@ import { Accommodation } from "../model/accommodation";
 import { normalModal, successModal } from "../utils/helper";
 import {
   createAccommodation,
+  deleteAccommodation,
   updateAccommodation,
 } from "../server/accommodation";
 import { registerLodge } from "../services/host";
@@ -55,7 +56,7 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
   };
 
   useEffect(() => {
-    console.log(loading)
+    console.log(loading);
     if (accommodation) {
       setId(accommodation.id);
       setAccommodationName(accommodation.accommodationName);
@@ -63,8 +64,7 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
       setAddress(accommodation.address);
       setLogoImageUrl(accommodation.logoImageUrl);
       setCoverImageUrl(accommodation.coverImageUrl);
-      setRating(accommodation.rating)
-
+      setRating(accommodation.rating);
     } else {
       normalModal(
         "info",
@@ -92,11 +92,15 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
           res!.data.accommodation._id,
           walletProvider
         );
-        await tx.wait();
-        setLodgeUpdate(!lodgeUpdate);
-        setTimeout(() => {
-          successModal("Registered Successfully!", tx.hash);
-        }, 2500);
+        if (tx) {
+          setLodgeUpdate(!lodgeUpdate);
+          setTimeout(() => {
+            successModal("Registered Successfully!", tx.hash);
+          }, 2500);
+        } else {
+          await deleteAccommodation(res!.data.accommodation._id);
+          errorScenario();
+        }
       } else {
         errorScenario();
       }
@@ -108,15 +112,13 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
 
   const errorScenario = () => {
     setLoading(false);
-    if (!loading) {
-      setTimeout(() => {
-        normalModal(
-          "error",
-          "Oops...",
-          "Error while register your accommodation. Please try again later!"
-        );
-      }, 1000);
-    }
+    setTimeout(() => {
+      normalModal(
+        "error",
+        "Oops...",
+        "Error while register your accommodation. Please try again later!"
+      );
+    }, 1500);
   };
 
   const updateLodge = async () => {
@@ -134,24 +136,20 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
       );
       if (res!.status == 200) {
         setLodgeUpdate(!lodgeUpdate);
-        if (!loading) {
-          normalModal(
-            "success",
-            "Updated Successfully!",
-            "Your accommodation has been successfully updated!"
-          );
-        }
+        normalModal(
+          "success",
+          "Updated Successfully!",
+          "Your accommodation has been successfully updated!"
+        );
       }
     } catch (error) {
       console.log(error);
       setLoading(false);
-      if (!loading) {
-        normalModal(
-          "error",
-          "Oops...",
-          "Error while update your accommodation. Please try again later!"
-        );
-      }
+      normalModal(
+        "error",
+        "Oops...",
+        "Error while update your accommodation. Please try again later!"
+      );
     }
   };
 

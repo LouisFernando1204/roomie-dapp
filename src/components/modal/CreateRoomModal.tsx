@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { normalModal, successModal } from "../../utils/helper";
 import { parseEther } from "ethers";
-import { createRoom } from "../../server/room";
+import { createRoom, deleteRoom } from "../../server/room";
 import { pinata } from "../../global/global";
 import { Accommodation } from "../../model/accommodation";
 import { registerToken } from "../../services/host";
@@ -93,6 +93,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                 successModal("Created Successfully!", tx.hash);
               }, 2500);
             } else {
+              await deleteRoom(res!.data.room._id);
               errorScenario();
             }
           }

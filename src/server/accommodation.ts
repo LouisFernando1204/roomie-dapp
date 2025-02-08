@@ -50,6 +50,18 @@ export async function updateAccommodation(
   }
 }
 
+export async function deleteAccommodation(_id: string) {
+  try {
+    await axios.delete(`${BACKEND_API_URL}accommodations`, {
+      data: {
+        id: _id,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
 export async function getAccommodations() {
   try {
     const res = await axios.get(`${BACKEND_API_URL}accommodations`);

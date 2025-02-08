@@ -12,9 +12,17 @@ import { Booking } from "../model/booking";
 import { LoadingScreen } from "../components/ui/loading-screen";
 import { checkIn, checkOut } from "../services/customer";
 import { normalModal, successModal } from "../utils/helper";
-import { caseDetail, orderDetail, tokenDetail, withdrawForCaseWinner } from "../services/public";
+import {
+  caseDetail,
+  orderDetail,
+  tokenDetail,
+  withdrawForCaseWinner,
+} from "../services/public";
 import { EmptyPage } from "./EmptyPage";
-import { getAccommodations, getAccommodationById } from "../server/accommodation";
+import {
+  getAccommodations,
+  getAccommodationById,
+} from "../server/accommodation";
 import { Accommodation } from "../model/accommodation";
 import { formatEther, parseEther } from "ethers";
 import { createRating } from "../server/rating";
@@ -32,7 +40,7 @@ interface HistoryPageProps {
 const HistoryPage: React.FC<HistoryPageProps> = ({
   walletProvider,
   address,
-  accommodation
+  accommodation,
 }) => {
   const [bookingsHistory, setBookingsHistory] = useState<Booking[]>([]);
   const [selectedBooking, setSelectedBooking] = useState<Booking>();
@@ -48,7 +56,9 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
   const [bookingId, setBookingId] = useState<string>();
   const [accommodationId, setAccommodationId] = useState<string>();
   const [oldCaseName, setOldCaseName] = useState("");
-  const [caseStatuses, setCaseStatuses] = useState<Map<string, string>>(new Map());
+  const [caseStatuses, setCaseStatuses] = useState<Map<string, string>>(
+    new Map()
+  );
 
   const navigate = useNavigate();
 
@@ -98,7 +108,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -177,8 +187,13 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
       if (specificCase != null) {
         if (accommodation != null) {
           if (specificCase.accommodationCases.length > 0) {
-            const accommodationCaseMatch = await getAccommodationById(specificCase.accommodationCases[0].accommodationId);
-            if (accommodationCaseMatch && accommodationCaseMatch.accommodationHost === address) {
+            const accommodationCaseMatch = await getAccommodationById(
+              specificCase.accommodationCases[0].accommodationId
+            );
+            if (
+              accommodationCaseMatch &&
+              accommodationCaseMatch.accommodationHost === address
+            ) {
               setLoading(false);
               alreadyLodgeACasePopUp();
               return;
@@ -250,15 +265,25 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
       if (specificCase) {
         const caseDetailData = await caseDetail(specificCase.id);
         if (caseDetailData) {
-          if (caseDetailData.caseCreatedTimestamp && caseDetailData.totalCustomerVote && caseDetailData.totalHostVote) {
+          if (
+            caseDetailData.caseCreatedTimestamp &&
+            caseDetailData.totalCustomerVote &&
+            caseDetailData.totalHostVote
+          ) {
             const caseTimestampMs = caseDetailData.caseCreatedTimestamp * 1000;
             const now = Date.now();
             const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
 
-            if ((now - caseTimestampMs > sevenDaysMs) && (caseDetailData.totalCustomerVote > caseDetailData.totalHostVote)) {
+            if (
+              now - caseTimestampMs > sevenDaysMs &&
+              caseDetailData.totalCustomerVote > caseDetailData.totalHostVote
+            ) {
               return "customer wins";
             }
-            if ((now - caseTimestampMs > sevenDaysMs) && (caseDetailData.totalCustomerVote < caseDetailData.totalHostVote)) {
+            if (
+              now - caseTimestampMs > sevenDaysMs &&
+              caseDetailData.totalCustomerVote < caseDetailData.totalHostVote
+            ) {
               return "host wins";
             }
             return "still in progress";
@@ -309,17 +334,17 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
             <p>Are you sure you want to withdraw this case?</p>
           </div>
         `,
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Withdraw',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: "Withdraw",
+      cancelButtonText: "Cancel",
       customClass: {
-        popup: 'swal-modal',
-        confirmButton: 'swal-confirm-button swal-wide-button',
-        cancelButton: 'swal-cancel-button swal-wide-button',
-        actions: 'swal-two-buttons'
+        popup: "swal-modal",
+        confirmButton: "swal-confirm-button swal-wide-button",
+        cancelButton: "swal-cancel-button swal-wide-button",
+        actions: "swal-two-buttons",
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     });
 
     if (result.isDismissed) {
@@ -376,7 +401,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
 
   return (
     <div className="px-4 md:px-12">
-      
       {/* <button onClick={onCreate}>Create</button> */}
       <h1 className="text-2xl font-bold text-darkOrange mb-4 ">
         Booking History
@@ -425,7 +449,9 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   <div className="flex space-x-2">
                     {caseStatus === "customer wins" ? (
                       <button
-                        onClick={() => handleWithdrawCase(item.id, item.tokenId)}
+                        onClick={() =>
+                          handleWithdrawCase(item.id, item.tokenId)
+                        }
                         type="button"
                         className="mt-4 w-full shrink-0 rounded-lg bg-primary px-5 py-2.5 text-base font-medium text-white hover:bg-darkYellow focus:outline-none sm:mt-0 md:w-auto"
                       >
@@ -475,7 +501,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                   </div>
                 </Card>
               </motion.div>
-            )
+            );
           })}
           {selectedBooking && showRateModal && (
             <div
@@ -503,10 +529,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                       <button
                         key={star}
                         onClick={() => setSelectedRating(star)}
-                        className={`text-4xl lg:text-6xl my-8 ${selectedRating >= star
-                          ? "text-yellow-500"
-                          : "text-gray-300"
-                          }`}
+                        className={`text-4xl lg:text-6xl my-8 ${
+                          selectedRating >= star
+                            ? "text-yellow-500"
+                            : "text-gray-300"
+                        }`}
                       >
                         ★
                       </button>
@@ -536,9 +563,18 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
 
       {/* Case Modal */}
       {showCaseModal && (
-        <CreateCaseModal setShowCaseModal={setShowCaseModal} accommodation={accommodation} address={address} bookingId={bookingId} accommodationId={accommodationId} loading={loading} setLoading={setLoading} walletProvider={walletProvider} oldCaseName={oldCaseName} />
-      )
-      }
+        <CreateCaseModal
+          setShowCaseModal={setShowCaseModal}
+          accommodation={accommodation}
+          address={address}
+          bookingId={bookingId}
+          accommodationId={accommodationId}
+          loading={loading}
+          setLoading={setLoading}
+          walletProvider={walletProvider}
+          oldCaseName={oldCaseName}
+        />
+      )}
     </div>
   );
 };
