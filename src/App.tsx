@@ -24,6 +24,7 @@ import { Accommodation } from "./model/accommodation";
 import { LoadingScreen } from "./components/ui/loading-screen";
 import HistoryPage from "./views/History";
 import { getAccommodationRating } from "./server/rating";
+// import { CardSection } from "./components/sections/CardSection";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -76,16 +77,15 @@ function App() {
           (item: Accommodation) => item.accommodationHost === address
         );
         if (accommodation) {
-          const rating = await getAccommodationRating(accommodation.id)
+          const rating = await getAccommodationRating(accommodation.id);
           if (rating != undefined) {
             const updateAccommodation = {
               ...accommodation,
-              rating: rating
-            }
+              rating: rating,
+            };
             setAccommodation(updateAccommodation);
-          }
-          else {
-            setAccommodation(accommodation)
+          } else {
+            setAccommodation(accommodation);
           }
         }
       }
@@ -150,9 +150,21 @@ function App() {
               />
             }
           />
-          <Route path="/history" element={<HistoryPage walletProvider={walletProvider} address={address} accommodation={accommodation} />} />
+          <Route
+            path="/history"
+            element={
+              <HistoryPage
+                walletProvider={walletProvider}
+                address={address}
+                accommodation={accommodation}
+              />
+            }
+          />
           <Route path="/court" element={<Court />} />
-          <Route path="/court/:id" element={<CourtDetail walletProvider={walletProvider} />} />
+          <Route
+            path="/court/:id"
+            element={<CourtDetail walletProvider={walletProvider} />}
+          />
         </Routes>
       </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />

@@ -10,7 +10,12 @@ import { LoadingScreen } from "../components/ui/loading-screen";
 import { getRoomsById } from "../server/room";
 import { EmptyPage } from "./EmptyPage";
 import { format } from "date-fns";
-import { orderDetail, tokenDetail, caseDetail, withdrawForCaseWinner } from "../services/public";
+import {
+  orderDetail,
+  tokenDetail,
+  caseDetail,
+  withdrawForCaseWinner,
+} from "../services/public";
 import { withdrawFromCustomerCheckOut } from "../services/host";
 import { normalModal, successModal } from "../utils/helper";
 import { formatEther, parseEther } from "ethers";
@@ -28,7 +33,7 @@ interface OrderListProps {
 const OrderList: React.FC<OrderListProps> = ({
   accommodation,
   walletProvider,
-  address
+  address,
 }) => {
   const [bookingsHistory, setBookingsHistory] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -37,7 +42,9 @@ const OrderList: React.FC<OrderListProps> = ({
   const [bookingId, setBookingId] = useState<string>();
   const [accommodationId, setAccommodationId] = useState<string>();
   const [oldCaseName, setOldCaseName] = useState("");
-  const [caseStatuses, setCaseStatuses] = useState<Map<string, string>>(new Map());
+  const [caseStatuses, setCaseStatuses] = useState<Map<string, string>>(
+    new Map()
+  );
 
   const fetchBookings = async () => {
     setLoading(true);
@@ -121,8 +128,13 @@ const OrderList: React.FC<OrderListProps> = ({
       if (specificCase != null) {
         if (accommodation != null) {
           if (specificCase.accommodationCases.length > 0) {
-            const accommodationCaseMatch = await getAccommodationById(specificCase.accommodationCases[0].accommodationId);
-            if (accommodationCaseMatch && accommodationCaseMatch.accommodationHost === address) {
+            const accommodationCaseMatch = await getAccommodationById(
+              specificCase.accommodationCases[0].accommodationId
+            );
+            if (
+              accommodationCaseMatch &&
+              accommodationCaseMatch.accommodationHost === address
+            ) {
               setLoading(false);
               alreadyLodgeACasePopUp();
               return;
@@ -164,15 +176,25 @@ const OrderList: React.FC<OrderListProps> = ({
       if (specificCase) {
         const caseDetailData = await caseDetail(specificCase.id);
         if (caseDetailData) {
-          if (caseDetailData.caseCreatedTimestamp && caseDetailData.totalCustomerVote && caseDetailData.totalHostVote) {
+          if (
+            caseDetailData.caseCreatedTimestamp &&
+            caseDetailData.totalCustomerVote &&
+            caseDetailData.totalHostVote
+          ) {
             const caseTimestampMs = caseDetailData.caseCreatedTimestamp * 1000;
             const now = Date.now();
             const sevenDaysMs = 7 * 24 * 60 * 60 * 1000;
 
-            if ((now - caseTimestampMs > sevenDaysMs) && (caseDetailData.totalCustomerVote > caseDetailData.totalHostVote)) {
+            if (
+              now - caseTimestampMs > sevenDaysMs &&
+              caseDetailData.totalCustomerVote > caseDetailData.totalHostVote
+            ) {
               return "customer wins";
             }
-            if ((now - caseTimestampMs > sevenDaysMs) && (caseDetailData.totalCustomerVote < caseDetailData.totalHostVote)) {
+            if (
+              now - caseTimestampMs > sevenDaysMs &&
+              caseDetailData.totalCustomerVote < caseDetailData.totalHostVote
+            ) {
               return "host wins";
             }
             return "still in progress";
@@ -221,17 +243,17 @@ const OrderList: React.FC<OrderListProps> = ({
           <p>Are you sure you want to withdraw this case?</p>
         </div>
       `,
-      icon: 'question',
+      icon: "question",
       showCancelButton: true,
-      confirmButtonText: 'Withdraw',
-      cancelButtonText: 'Cancel',
+      confirmButtonText: "Withdraw",
+      cancelButtonText: "Cancel",
       customClass: {
-        popup: 'swal-modal',
-        confirmButton: 'swal-confirm-button swal-wide-button',
-        cancelButton: 'swal-cancel-button swal-wide-button',
-        actions: 'swal-two-buttons'
+        popup: "swal-modal",
+        confirmButton: "swal-confirm-button swal-wide-button",
+        cancelButton: "swal-cancel-button swal-wide-button",
+        actions: "swal-two-buttons",
       },
-      buttonsStyling: false
+      buttonsStyling: false,
     });
 
     if (result.isDismissed) {
@@ -342,7 +364,7 @@ const OrderList: React.FC<OrderListProps> = ({
                   Customer Account
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Lodge Case
+                  Case
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Withdraw
@@ -370,14 +392,21 @@ const OrderList: React.FC<OrderListProps> = ({
                       {order.payment * 2}
                     </td>
                     <td className="px-6 py-4">
-                      {format(new Date(order.checkIn * 1000), "EEEE, dd MMMM yyyy")}
+                      {format(
+                        new Date(order.checkIn * 1000),
+                        "EEEE, dd MMMM yyyy"
+                      )}
                     </td>
                     <td className="px-6 py-4">{order.durationInDays}</td>
                     <td className="px-6 py-4">
-                      {`${order.checkOut !== 0
-                        ? `${format(new Date(order.bookingTimestamp * 1000), "EEEE, dd MMMM yyyy")}`
-                        : `-`
-                        }`}
+                      {`${
+                        order.checkOut !== 0
+                          ? `${format(
+                              new Date(order.bookingTimestamp * 1000),
+                              "EEEE, dd MMMM yyyy"
+                            )}`
+                          : `-`
+                      }`}
                     </td>
                     <td className="px-6 py-4">{order.roomType}</td>
                     <td className="px-6 py-4">{order.tokenId}</td>
@@ -385,7 +414,9 @@ const OrderList: React.FC<OrderListProps> = ({
                     <td className="px-6 py-4">
                       {caseStatus === "host wins" ? (
                         <button
-                          onClick={() => handleWithdrawCase(order.id, order.tokenId)}
+                          onClick={() =>
+                            handleWithdrawCase(order.id, order.tokenId)
+                          }
                           type="button"
                           className="mt-4 w-full shrink-0 rounded-lg bg-primary px-5 py-2.5 text-base font-medium text-white hover:bg-darkYellow focus:outline-none sm:mt-0 md:w-auto"
                         >
@@ -397,7 +428,7 @@ const OrderList: React.FC<OrderListProps> = ({
                           type="button"
                           className="mt-4 w-full shrink-0 rounded-lg bg-primary px-5 py-2.5 text-base font-medium text-white hover:bg-darkYellow focus:outline-none sm:mt-0 md:w-auto"
                         >
-                          Lodge a case
+                          File a case
                         </button>
                       )}
                     </td>
@@ -407,10 +438,11 @@ const OrderList: React.FC<OrderListProps> = ({
                           withdraw(order.id, order.tokenId);
                         }
                       }}
-                      className={`px-6 py-4 hover:underline cursor-pointer ${!order.alreadyCheckOut
-                        ? "text-gray-400"
-                        : "text-complementary"
-                        }`}
+                      className={`px-6 py-4 hover:underline cursor-pointer ${
+                        !order.alreadyCheckOut
+                          ? "text-gray-400"
+                          : "text-complementary"
+                      }`}
                     >
                       {order.alreadyCheckOut
                         ? "Withdraw"
@@ -431,9 +463,18 @@ const OrderList: React.FC<OrderListProps> = ({
 
       {/* Case Modal */}
       {showCaseModal && (
-        <CreateCaseModal setShowCaseModal={setShowCaseModal} accommodation={accommodation} address={address} bookingId={bookingId} accommodationId={accommodationId} loading={loading} setLoading={setLoading} walletProvider={walletProvider} oldCaseName={oldCaseName} />
-      )
-      }
+        <CreateCaseModal
+          setShowCaseModal={setShowCaseModal}
+          accommodation={accommodation}
+          address={address}
+          bookingId={bookingId}
+          accommodationId={accommodationId}
+          loading={loading}
+          setLoading={setLoading}
+          walletProvider={walletProvider}
+          oldCaseName={oldCaseName}
+        />
+      )}
     </div>
   );
 };

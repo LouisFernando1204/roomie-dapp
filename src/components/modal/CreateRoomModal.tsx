@@ -38,6 +38,15 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   const [facilities, setFacilities] = useState("");
   const [images, setImages] = useState<string[]>([]);
 
+  const [nft, setNft] = useState<string>("");
+
+  const handleNftChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files![0];
+    if (file) {
+      setNft(URL.createObjectURL(file));
+    }
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files) {
@@ -54,7 +63,8 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
     if (success) {
       try {
         const { uploadedImages } = await uploadImageToPinata();
-        const tokenUri = await createTokenUri(uploadedImages[0]);
+        const nftHash = await uploadedNftHash();
+        const tokenUri = await createTokenUri(nftHash!);
         if (tokenUri) {
           console.log(tokenUri);
           const res = await createRoom(
@@ -76,26 +86,32 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               tokenPrice,
               walletProvider
             );
-            const receipt = await tx.wait();
-            if (receipt) {
+            if (tx) {
               setShowModal(false);
               setUpdate(!update);
-              if (!loading) {
-                setTimeout(() => {
-                  successModal("Created Successfully!", tx.hash);
-                }, 2500);
-              }
+              setTimeout(() => {
+                successModal("Created Successfully!", tx.hash);
+              }, 2500);
             } else {
               errorScenario();
             }
           }
         } else {
-          errorScenario()
+          errorScenario();
         }
       } catch (error) {
         console.log(error);
-        errorScenario()
+        errorScenario();
       }
+    }
+  };
+
+  const uploadedNftHash = async () => {
+    try {
+      const upload = await pinata.upload.url(nft);
+      return `${upload.IpfsHash}`;
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -152,28 +168,8 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   const createTokenUri = async (imageUrl: string) => {
     const jsonToUpload = {
       name: roomType,
-      token_id: parseInt(tokenId),
-      price_per_night_in_eth: parseFloat(tokenPrice),
-      accommodation_id: accommodation!.id,
-      accommodation_name: accommodation!.accommodationName,
-      image: imageUrl,
       description: roomDescription,
-      attributes: [
-        {
-          trait_type: "Facilities",
-          value: facilities,
-        },
-        {
-          trait_type: "Bed Size",
-          value: bedType,
-        },
-        {
-          trait_type: "Max Occupancy",
-          value: parseInt(maxPeople),
-        },
-      ],
-      blockchain: "Manta Pacific",
-      contract_address: import.meta.env.VITE_CONTRACT_ADDRESS,
+      image: imageUrl,
     };
     return (await pinata.upload.json(jsonToUpload)).IpfsHash;
   };
@@ -225,13 +221,25 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               type="text"
               className={inputStyling}
               placeholder="E.g., Deluxe Room, Single Room"
+              value={roomType}
               onChange={(e) => setRoomType(e.target.value)}
+            />
+            <label htmlFor="" className={labelStyling}>
+              Token ID
+            </label>
+            <input
+              type="number"
+              className={inputStyling}
+              value={tokenId}
+              placeholder="Enter the unique token ID"
+              onChange={(e) => setTokenId(e.target.value)}
             />
             <label htmlFor="" className={labelStyling}>
               Price per night (ETH)
             </label>
             <input
               type="number"
+              value={tokenPrice}
               className={inputStyling}
               placeholder="E.g., 0.01, 0.05"
               onChange={(e) => setTokenPrice(e.target.value)}
@@ -242,6 +250,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             </label>
             <textarea
               className={inputStyling}
+              value={roomDescription}
               placeholder="E.g., Modern deluxe room with a king-sized bed, WiFi, and air conditioning."
               onChange={(e) => setRoomDescription(e.target.value)}
             />
@@ -251,6 +260,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             <input
               type="text"
               className={inputStyling}
+              value={bedType}
               placeholder="E.g., King Size, Twin Beds"
               onChange={(e) => setBedType(e.target.value)}
             />
@@ -261,6 +271,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
               type="number"
               min={1}
               className={inputStyling}
+              value={maxPeople}
               placeholder="E.g., 2, 4, 6"
               onChange={(e) => setMaxPeople(e.target.value)}
             />
@@ -270,20 +281,12 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             <input
               type="text"
               className={inputStyling}
+              value={facilities}
               placeholder="E.g., WiFi, TV, Air Conditioner"
               onChange={(e) => setFacilities(e.target.value)}
             />
             <label htmlFor="" className={labelStyling}>
-              Token ID
-            </label>
-            <input
-              type="number"
-              className={inputStyling}
-              placeholder="Enter the unique token ID"
-              onChange={(e) => setTokenId(e.target.value)}
-            />
-            <label htmlFor="" className={labelStyling}>
-              Images
+              Room Images (3 required)
             </label>
             <div className="mt-2 flex flex-col items-center gap-2">
               <input
@@ -294,7 +297,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                 onChange={handleImageChange}
               />
               <div className="grid grid-cols-2 gap-4 mt-2">
-                {images.length > 0 ? (
+                {images.length > 0 &&
                   images.map((image, index) => (
                     <div
                       key={index}
@@ -306,9 +309,25 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                  ))
-                ) : (
-                  <p>No images uploaded yet</p>
+                  ))}
+              </div>
+            </div>
+            <label htmlFor="" className={labelStyling}>
+              NFT Images
+            </label>
+            <div className="mt-2 flex flex-col items-center gap-2">
+              <input
+                type="file"
+                id="imageUpload"
+                multiple
+                className={`${inputStyling}`}
+                onChange={handleNftChange}
+              />
+              <div className="flex justify-center items-center mt-2">
+                {nft && (
+                  <div className="w-32 h-32 bg-gray-200 rounded-lg overflow-hidden">
+                    <img src={nft} className="w-full h-full object-cover" />
+                  </div>
                 )}
               </div>
             </div>

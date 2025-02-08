@@ -527,9 +527,9 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                       <button
                         onClick={() => checkAlreadyLodgeACase(item)}
                         type="button"
-                        className="mt-4 w-full shrink-0 rounded-lg bg-primary px-5 py-2.5 text-base font-medium text-white hover:bg-darkYellow focus:outline-none sm:mt-0 md:w-auto"
+                        className="mt-4 w-full shrink-0 rounded-lg bg-complementary px-5 py-2.5 text-base font-medium text-white focus:outline-none sm:mt-0 md:w-auto"
                       >
-                        Lodge a case
+                        File a case
                       </button>
                     )}
                     {item.checkIn <= currentDate && !item.alreadyCheckIn && (
@@ -556,14 +556,14 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                         <Luggage size={16} className="mr-1" /> Rate
                       </Button>
                     )}
-                    <Button
+                    {/* <Button
                       onClick={() => {
                         processSelectedNFT(item.roomId, item.tokenId, item.accommodationId, item.accommodationName);
                       }}
                       className="bg-complementary text-white flex items-center"
                     >
                       <Eye size={16} className="mr-1" /> Show NFT
-                    </Button>
+                    </Button> */}
                   </div>
                 </Card>
               </motion.div>
