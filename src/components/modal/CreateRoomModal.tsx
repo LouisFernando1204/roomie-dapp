@@ -79,20 +79,28 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
             uploadedImages
           );
           if (res!.status == 201) {
-            const tx = await registerToken(
-              accommodation!.id,
-              tokenUri,
-              parseInt(tokenId),
-              tokenPrice,
-              walletProvider
-            );
-            if (tx) {
+            try {
+              const tx = await registerToken(
+                accommodation!.id,
+                tokenUri,
+                parseInt(tokenId),
+                tokenPrice,
+                walletProvider
+              );
+              if (tx) {
+                setShowModal(false);
+                setUpdate(!update);
+                setTimeout(() => {
+                  successModal("Created Successfully!", tx.hash);
+                }, 2500);
+              } else {
+                setShowModal(false);
+                await deleteRoom(res!.data.room._id);
+                errorScenario();
+              }
+            } catch (error) {
+              console.log(error);
               setShowModal(false);
-              setUpdate(!update);
-              setTimeout(() => {
-                successModal("Created Successfully!", tx.hash);
-              }, 2500);
-            } else {
               await deleteRoom(res!.data.room._id);
               errorScenario();
             }

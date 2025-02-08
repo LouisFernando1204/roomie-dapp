@@ -56,13 +56,32 @@ export async function deleteRoom(_id: string) {
 
 export async function getRoomsById(_id: string) {
   try {
-    const res = await axios.get(`${BACKEND_API_URL}rooms/${_id}`)
-    return res.data
+    const res = await axios.get(`${BACKEND_API_URL}rooms/${_id}`);
+    return structuredRoom(res.data);
+  } catch (error) {
+    console.log(error);
+    return;
   }
-  catch (error) {
-    console.log(error)
-    return
-  }
+}
+
+function structuredRoom(room: any) {
+  return {
+    id: room._id,
+    tokenId: room.tokenId,
+    tokenMetadata: "",
+    accommodationId: room.accommodationId,
+    accommodationName: "",
+    address: "",
+    roomType: room.roomType,
+    roomDescription: room.roomDescription,
+    facilities: room.facilities,
+    price: room.price,
+    bedSize: room.bedSize,
+    maxOccupancy: room.maxOccupancy,
+    imageUrls: room.imageUrls,
+    supply: 0,
+    burn: 0,
+  };
 }
 
 function structuredRooms(rooms: any) {

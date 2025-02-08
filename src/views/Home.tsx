@@ -22,7 +22,7 @@ const Home = () => {
   const [homeLoading, setHomeLoading] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([]);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const fetchRooms = async () => {
     setHomeLoading(true);
@@ -109,7 +109,7 @@ const Home = () => {
               transition={{ delay: 0.3, duration: 1 }}
               className="text-2xl md:text-3xl lg:text-5xl font-black text-center"
             >
-              Web3 Meets Hospitality: Your Stay, Your Way
+              When Hospitality Come Together with AI and Web3
             </motion.h1>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -206,7 +206,7 @@ const Home = () => {
                 visible: { opacity: 1, scale: 1 },
               }}
               onClick={() => {
-                navigate(`/roomdetail/${listing.id}`)
+                navigate(`/roomdetail/${listing.id}`);
               }}
               transition={{ duration: 0.5 }}
               className="bg-white rounded-lg shadow-lg overflow-hidden ease-in-out hover:scale-105 duration-200 transition-transform cursor-pointer"
@@ -232,9 +232,7 @@ const Home = () => {
                 </div>
                 <div className="flex flex-row items-center space-x-1">
                   <MapPinHouse size={18} color="orange" />
-                  <h3 className="text-sm text-gray-500">
-                    {listing.address}
-                  </h3>
+                  <h3 className="text-sm text-gray-500">{listing.address}</h3>
                 </div>
                 <p className="text-sm mt-2 line-clamp-3">
                   {listing.roomDescription}

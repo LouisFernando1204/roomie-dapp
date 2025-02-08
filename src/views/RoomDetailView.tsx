@@ -64,53 +64,66 @@ const RoomDetail: React.FC<RoomDetailProps> = ({ walletProvider, address }) => {
     const durationInDays = Math.ceil(
       (checkOutTimestamp - checkInTimestamp) / 86400
     );
+    console.log(durationInDays);
+    console.log(checkInTimestamp);
+    console.log(checkOutTimestamp);
+    console.log(address);
+    console.log(room!.id);
+    console.log(room!.tokenId);
+
+    console.log(accommodation!.id);
 
     if (checkInTimestamp > checkOutTimestamp) {
       errorScenarioCreateBooking();
-    }
-
-    try {
-      const res = await createBooking(
-        accommodation!.id,
-        room!.id,
-        room!.tokenId,
-        address!,
-        checkInTimestamp,
-        checkOutTimestamp,
-        durationInDays
-      );
-      if (res?.status == 201) {
-        const tx = await reserve(
+    } else {
+      try {
+        const res = await createBooking(
           accommodation!.id,
-          res.data.booking._id,
+          room!.id,
           room!.tokenId,
-          durationInDays,
+          address!,
           checkInTimestamp,
-          walletProvider
+          checkOutTimestamp,
+          durationInDays
         );
-        if (tx) {
-          setLoading(false);
-          setTimeout(() => {
-            successModal("Book Placed Successfully!", tx.hash);
-          }, 2000);
+        if (res!.status == 201) {
+          try {
+            const tx = await reserve(
+              accommodation!.id,
+              res!.data.booking._id,
+              room!.tokenId,
+              durationInDays,
+              checkInTimestamp,
+              walletProvider
+            );
+            if (tx) {
+              setLoading(false);
+              setTimeout(() => {
+                successModal("Book Placed Successfully!", tx.hash);
+              }, 2000);
+            } else {
+              await deleteBooking(res!.data.booking._id);
+              errorScenarioCreateBooking();
+            }
+          } catch (error) {
+            console.log(res!.data.booking._id);
+            await deleteBooking(res!.data.booking._id);
+            errorScenarioCreateBooking();
+          }
+        } else {
+          errorScenarioCreateBooking();
         }
-        else {
-          await deleteBooking(res.data.booking._id)
-          errorScenarioCreateBooking()
-        }
-      } else {
+      } catch (error) {
+        console.log(error);
         errorScenarioCreateBooking();
       }
-    } catch (error) {
-      console.log(error);
-      errorScenarioCreateBooking();
     }
   };
 
   const fetchRoom = async () => {
     setLoading(true);
     try {
-      const room: Room = await getRoomsById(id!);
+      const room = await getRoomsById(id!);
       const accommodations = await getAccommodations();
 
       if (room && accommodations) {
@@ -118,6 +131,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({ walletProvider, address }) => {
           (accommodation: Accommodation) =>
             accommodation.id === room.accommodationId
         );
+        console.log(room);
         if (filtered) {
           setAccommodation(filtered);
         }

@@ -66,7 +66,7 @@ const OrderList: React.FC<OrderListProps> = ({
 
             return {
               ...booking,
-              roomType: room.roomType,
+              roomType: room!.roomType,
               alreadyCheckIn: data.customerAlreadyCheckIn,
               payment: Number(formatEther(payment)),
               alreadyCheckOut: data.customerAlreadyCheckOut,

@@ -88,16 +88,22 @@ export const LodgeProfile: React.FC<LodgeProfileProps> = ({
         coverImageUrl
       );
       if (res!.status == 201) {
-        const tx = await registerLodge(
-          res!.data.accommodation._id,
-          walletProvider
-        );
-        if (tx) {
-          setLodgeUpdate(!lodgeUpdate);
-          setTimeout(() => {
-            successModal("Registered Successfully!", tx.hash);
-          }, 2500);
-        } else {
+        try {
+          const tx = await registerLodge(
+            res!.data.accommodation._id,
+            walletProvider
+          );
+          if (tx) {
+            setLodgeUpdate(!lodgeUpdate);
+            setTimeout(() => {
+              successModal("Registered Successfully!", tx.hash);
+            }, 2500);
+          } else {
+            await deleteAccommodation(res!.data.accommodation._id);
+            errorScenario();
+          }
+        } catch (error) {
+          console.log(error);
           await deleteAccommodation(res!.data.accommodation._id);
           errorScenario();
         }

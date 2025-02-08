@@ -71,16 +71,23 @@ export const CreateCaseModal: React.FC<CreateCaseModalProps> = ({
           caseName
         );
         if (res?.status === 201) {
-          const tx = await openCase(
-            res.data.caseData._id,
-            bookingId!,
-            accommodationId!,
-            walletProvider
-          );
-          if (tx) {
-            setLoading(false);
-            successModal("Created Successfully!", tx.hash);
-          } else {
+          try {
+            const tx = await openCase(
+              res.data.caseData._id,
+              bookingId!,
+              accommodationId!,
+              walletProvider
+            );
+            if (tx) {
+              setLoading(false);
+              successModal("Created Successfully!", tx.hash);
+            } else {
+              await deleteCase(res.data.caseData._id);
+              setLoading(false);
+              errorScenario();
+            }
+          } catch (error) {
+            console.log(error);
             await deleteCase(res.data.caseData._id);
             setLoading(false);
             errorScenario();
@@ -117,16 +124,23 @@ export const CreateCaseModal: React.FC<CreateCaseModalProps> = ({
           caseName
         );
         if (res!.status == 201) {
-          const tx = await openCase(
-            res!.data.caseData._id,
-            bookingId!,
-            accommodationId!,
-            walletProvider
-          );
-          if (tx) {
-            setLoading(false);
-            successModal("Created Successfully!", tx.hash);
-          } else {
+          try {
+            const tx = await openCase(
+              res!.data.caseData._id,
+              bookingId!,
+              accommodationId!,
+              walletProvider
+            );
+            if (tx) {
+              setLoading(false);
+              successModal("Created Successfully!", tx.hash);
+            } else {
+              await deleteCase(res!.data.caseData._id);
+              setLoading(false);
+              errorScenario();
+            }
+          } catch (error) {
+            console.log(error);
             await deleteCase(res!.data.caseData._id);
             setLoading(false);
             errorScenario();
