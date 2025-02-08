@@ -5,13 +5,13 @@ import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, Eye, Luggage } from "lucide-react";
+import { CheckCircle, Luggage } from "lucide-react";
 import { format } from "date-fns";
 import { createBooking, getBookings } from "../server/booking";
 import { Booking } from "../model/booking";
 import { LoadingScreen } from "../components/ui/loading-screen";
 import { checkIn, checkOut, reserve } from "../services/customer";
-import { normalModal, successModal, truncate } from "../utils/helper";
+import { normalModal, successModal } from "../utils/helper";
 import { caseDetail, orderDetail, tokenDetail, withdrawForCaseWinner } from "../services/public";
 import { EmptyPage } from "./EmptyPage";
 import { getAccommodations, getAccommodationById } from "../server/accommodation";
@@ -20,9 +20,7 @@ import { formatEther, parseEther } from "ethers";
 import { createRating } from "../server/rating";
 import { useNavigate } from "react-router-dom";
 import { CreateCaseModal } from "../components/modal/createCaseModal";
-import { CardSpotlight } from "../components/ui/card-spotlight";
 import { getCaseByBookingId } from "../server/case";
-import { getRoomsById } from "../server/room";
 import Swal from "sweetalert2";
 
 interface HistoryPageProps {
@@ -41,21 +39,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
   const [selectedRating, setSelectedRating] = useState<number>(0);
 
   const [loading, setLoading] = useState(true);
-  const [selectedNFT, setSelectedNFT] = useState<{
-    name: string;
-    token_id: number;
-    price_per_night_in_eth: number;
-    accommodation_id: string;
-    accommodation_name: string;
-    image: string;
-    description: string;
-    facilities: string[];
-    bedType: string;
-    maxPeople: string;
-    blockchain: string;
-    contract_address: string;
-  } | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [update, setUpdate] = useState(false);
   const currentDate = Math.floor(Date.now() / 1000);
 
@@ -114,6 +97,8 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -223,37 +208,6 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
       getOldCaseName(booking.id);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const processSelectedNFT = async (roomId: string, tokenId: number, accommodationId: string, accommodationName: string) => {
-    setLoading(true);
-    try {
-      const roomData = await getRoomsById(roomId);
-      if (roomData) {
-        setLoading(false);
-        setSelectedNFT({
-          name: roomData.roomType,
-          token_id: tokenId,
-          price_per_night_in_eth: roomData.price,
-          accommodation_id: accommodationId,
-          accommodation_name: accommodationName,
-          image: roomData.imageUrls[0],
-          description: roomData.roomDescription,
-          facilities: roomData.facilities,
-          bedType: roomData.bedSize,
-          maxPeople: roomData.maxOccupancy,
-          blockchain: "Manta Pacific",
-          contract_address: import.meta.env.VITE_CONTRACT_ADDRESS
-        });
-        setIsModalOpen(true);
-        console.log(selectedNFT)
-      }
-    } catch (error) {
-      console.error(error);
-      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -468,9 +422,10 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
   }
 
   return (
-    <div className="min-h-screen">
-      <button onClick={onCreate}>Create</button>
-      <h1 className="text-2xl font-bold text-darkOrange mb-4">
+    <div className="px-4 md:px-12">
+      
+      {/* <button onClick={onCreate}>Create</button> */}
+      <h1 className="text-2xl font-bold text-darkOrange mb-4 ">
         Booking History
       </h1>
       {bookingsHistory.length > 0 ? (
@@ -625,108 +580,7 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
           />
         </div>
       )}
-      {/* NFT Modal */}
-      {isModalOpen && selectedNFT && (
-        <div className="fixed flex items-center justify-center w-screen h-screen inset-0 bg-black bg-opacity-50 p-4 z-50">
-          <CardSpotlight
-            data-aos="zoom-in-up"
-            data-aos-anchor-placement="top-bottom"
-            data-aos-duration="300"
-            className="h-fit w-full sm:w-9/12 lg:w-4/12 relative bg-black rounded-xl shadow-lg p-4"
-          >
-            {/* Close Button */}
-            <button
-              onClick={() => setIsModalOpen(false)}
-              type="button"
-              className="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-full bg-almostBlack text-gray-500 hover:bg-gray-900 hover:text-gray-300 transition z-50"
-            >
-              <svg className="h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
-              </svg>
-              <span className="sr-only">Close modal</span>
-            </button>
-            {/* Header */}
-            <div className="relative bg-gradient-to-r from-darkOrange to-primary rounded-lg p-2 flex items-center justify-center z-20">
-              <svg className="w-6 h-6 text-white mr-2" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1.89 12.7l-4.11-2 4.11-2 2-4.1 2 4.1 4.1 2-4.1 2-2 4.1z"></path>
-              </svg>
-              <span className="text-white font-bold text-lg">{selectedNFT.name}</span>
-            </div>
-            {/* Image Section */}
-            <div className="mt-4">
-              <img
-                src={selectedNFT.image}
-                alt={selectedNFT.name}
-                className="relative w-full h-52 object-cover rounded-lg border border-primary z-20"
-              />
-            </div>
-            {/* Details Section */}
-            <div className="relative mt-4 bg-almostBlack p-3 rounded-lg border border-primary z-20">
-              <ul className="text-sm text-gray-300 space-y-2">
-                <li className="flex justify-between">
-                  <span>Name</span>
-                  <span className="text-yellow-400 font-semibold">{selectedNFT.name}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Token Id</span>
-                  <span>{selectedNFT.token_id}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Price Per Night</span>
-                  <span>{selectedNFT.price_per_night_in_eth}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Accommodation Id</span>
-                  <span>{selectedNFT.accommodation_id}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Accommodation Name</span>
-                  <span>{selectedNFT.accommodation_name}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Description</span>
-                  <span>{selectedNFT.description}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Facilities</span>
-                  <span>{selectedNFT.facilities.join(', ')}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Bed Type</span>
-                  <span>{selectedNFT.bedType}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Max People</span>
-                  <span>{selectedNFT.maxPeople}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Blockchain</span>
-                  <span>{selectedNFT.blockchain}</span>
-                </li>
-                <hr className="border-t border-gray-300" />
-                <li className="flex justify-between">
-                  <span>Contract Address</span>
-                  <span>{truncate(selectedNFT.contract_address, 10, 10, 24)}</span>
-                </li>
-              </ul>
-            </div>
-            {/* Footer */}
-            <div className="relative mt-4 flex justify-center items-center text-gray-400 z-20">
-              <img src="/images/roomie_logo.jpg" alt="Roomie Logo" className="w-8 h-8 mr-2" />
-              <span className="text-base font-semibold">Roomie</span>
-            </div>
-          </CardSpotlight>
-        </div>
-      )}
+
       {/* Case Modal */}
       {showCaseModal && (
         <CreateCaseModal setShowCaseModal={setShowCaseModal} accommodation={accommodation} address={address} bookingId={bookingId} accommodationId={accommodationId} loading={loading} setLoading={setLoading} walletProvider={walletProvider} oldCaseName={oldCaseName} />

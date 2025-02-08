@@ -24,7 +24,7 @@ import { LoadingScreen } from "./components/ui/loading-screen";
 import HistoryPage from "./views/History";
 import { getAccommodationRating } from "./server/rating";
 import RoomDetail from "./views/RoomDetailView";
-// import { CardSection } from "./components/sections/CardSection";
+import Navbar from "./components/fixed/Navbar";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
@@ -105,7 +105,7 @@ function App() {
   }
 
   return (
-    <div className="font-lato bg-amber-100 min-h-screen flex flex-col">
+    <div className="font-lato bg-amber-100 flex flex-col min-h-screen">
       <Navbar
         connectedAddress={address}
         setIsUser={setIsUser}
@@ -113,9 +113,8 @@ function App() {
         handleConnect={open}
       />
 
-      <div className="flex-1 mt-32 px-4 md:px-12">
+      <div className="mt-32 flex-1">
         <Routes>
-          <Route path="/" element={<Home />} />
           <Route
             path="/room"
             element={
@@ -159,19 +158,18 @@ function App() {
                 accommodation={accommodation}
               />
             }
-            />
-            <Route path="/" element={<Home />} />
-            <Route path="/roomdetail" element={<RoomDetail /> } />
+          />
+          <Route path="/" element={<Home />} />
+          <Route path="/roomdetail" element={<RoomDetail />} />
           <Route path="/court" element={<Court />} />
           <Route
             path="/court/:id"
             element={<CourtDetail walletProvider={walletProvider} />}
-          /> 
-          </Routes>
+          />
+        </Routes>
+      </div>
       <Footer isUser={isUser} setIsUser={setIsUser} />
-      </div>
-
-      </div>
+    </div>
   );
 }
 

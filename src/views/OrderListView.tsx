@@ -79,6 +79,9 @@ const OrderList: React.FC<OrderListProps> = ({
     } catch (error) {
       console.log(error);
     }
+    finally {
+      setLoading(false)
+    }
   };
 
   const withdraw = async (orderId: string, tokenId: number) => {
@@ -322,7 +325,7 @@ const OrderList: React.FC<OrderListProps> = ({
   }
 
   return (
-    <div className="">
+    <div className="px-4 md:px-12">
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-darkOrange">
           {accommodation!.accommodationName} Order List

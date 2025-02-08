@@ -57,7 +57,7 @@ const RoomDetail = () => {
       </div>
 
       {/* About */}
-      <div className="px-6">
+      <div className="px-4 md:px-12">
         <h1 className="text-2xl font-bold">About this place</h1>
         <p className="text-lg font-light">
           Castle Oodeypore is a palatial homestay, offering a unique experience.

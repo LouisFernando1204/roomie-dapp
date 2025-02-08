@@ -144,8 +144,8 @@ const RoomList: React.FC<RoomListProps> = ({
   }
 
   return (
-    <div className="">
-      <div className="mb-4">
+    <div className="px-4 md:px-12">
+      <div className="mb-4 h-full">
         <h1 className="text-3xl font-semibold text-darkOrange">
           {`${accommodation.accommodationName} room list`}
         </h1>
@@ -245,10 +245,12 @@ const RoomList: React.FC<RoomListProps> = ({
           </table>
         </div>
       ) : (
-        <EmptyPage
-          title="Uh-oh! No rooms yet!"
-          text="Looks like you haven't added any rooms. Why not create one and get started?"
-        />
+        <div className="mb-8 relative overflow-x-auto shadow-md sm:rounded-lg bg-brightYellow">
+          <EmptyPage
+            title="Uh-oh! No rooms yet!"
+            text="Looks like you haven't added any rooms. Why not create one and get started?"
+          />
+        </div>
       )}
 
       {showCreateModal && (
