@@ -22,7 +22,9 @@ const Home = () => {
   const [homeLoading, setHomeLoading] = useState(false);
   const [rooms, setRooms] = useState<Room[]>([]);
 
-  const navigate = useNavigate();
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const navigate = useNavigate()
 
   const fetchRooms = async () => {
     setHomeLoading(true);
@@ -242,6 +244,93 @@ const Home = () => {
           ))}
         </motion.div>
       </section>
+
+
+      {/* Chatbot Floating Button and Popup */}
+{isChatOpen && (
+  <div className="fixed bottom-20 right-4 w-80 bg-white rounded-lg shadow-lg overflow-hidden z-50">
+    {/* Header */}
+    <div className="p-4 bg-gray-100 border-b flex justify-between items-center">
+      <h4 className="text-lg font-semibold">RoomieTalk</h4>
+      <button onClick={() => setIsChatOpen(false)} className="text-gray-600 text-2xl leading-none">
+        &times;
+      </button>
+    </div>
+    {/* Chat messages container with a subtle background */}
+    <div className="p-4 h-64 overflow-y-auto bg-gray-50">
+      {/* RooM8 Message */}
+      <div className="flex items-start gap-2.5">
+        <img
+          className="w-8 h-8 rounded-full"
+          src="https://img.icons8.com/?size=100&id=m31DrURYH9au&format=png&color=FD7E14"
+          alt="Chatbot Avatar"
+        />
+        <div className="flex flex-col w-full max-w-[320px] p-4 border border-yellow-200 bg-yellow-100 rounded-e-xl rounded-es-xl">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-semibold text-gray-900">RooM8</span>
+          </div>
+          <p className="text-sm text-gray-900 py-2.5">
+            Hello! How can I help you today?
+          </p>
+        </div>
+      </div>
+      {/* User's "You" Message */}
+      <div className="flex items-start gap-2.5 justify-end mt-4">
+        <div className="flex flex-col w-full max-w-[320px] p-4 border border-gray-200 bg-white rounded-e-xl rounded-es-xl">
+          <div className="flex items-center space-x-2 justify-end">
+            <span className="text-sm font-semibold text-gray-900">You</span>
+          </div>
+          <p className="text-sm text-end text-gray-900 py-2.5">
+            Do a flip!
+          </p>
+        </div>
+        <img
+          className="w-8 h-8 rounded-full"
+          src="/images/user.png"
+          alt="User Avatar"
+        />
+      </div>
+      {/* You can add more chat bubbles here */}
+    </div>
+    {/* Input Area */}
+    <div className="p-4 border-t">
+      <div className="flex gap-2">
+        <input
+          type="text"
+          placeholder="Type your message..."
+          className="flex-grow p-2 border rounded focus:outline-none"
+        />
+        <button className="p-2 bg-complementary hover:bg-skyBlue text-white rounded">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.01 21l20.99-9L2.01 3v7l15 2-15 2v7z"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+{/* Floating Chat Button */}
+<button
+  onClick={() => setIsChatOpen(true)}
+  className="fixed bottom-4 right-4 bg-complementary hover:bg-skyBlue text-white p-4 rounded-full shadow-lg z-50"
+>
+  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.97-4.03 9-9 9a9 9 0 01-4.5-1.2l-3.7 1 1-3.7A9 9 0 013 12c0-4.97 4.03-9 9-9s9 4.03 9 9z" />
+  </svg>
+</button>
+
+
     </>
   );
 };
