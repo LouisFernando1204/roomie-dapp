@@ -109,16 +109,11 @@ const OrderList: React.FC<OrderListProps> = ({
     try {
       const caseData = await getCaseByBookingId(bookingId);
       if (caseData) {
-        setLoading(false);
         setOldCaseName(caseData.name);
-        setShowCaseModal(true);
-      } else {
-        setLoading(false);
-        setShowCaseModal(true);
       }
+      setShowCaseModal(true);
     } catch (error) {
       console.error(error);
-      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -128,20 +123,25 @@ const OrderList: React.FC<OrderListProps> = ({
     setLoading(true);
     try {
       const specificCase = await getCaseByBookingId(booking.id);
-      if (specificCase != null) {
+      if (specificCase) {
+        if (accommodation == null) {
+          if (specificCase.accommodationCases.length === 0) {
+            setLoading(false);
+            noAccommodationCasePopUp();
+            return;
+          }
+        }
         if (accommodation != null) {
-          if (specificCase.accommodationCases.length > 0) {
-            const accommodationCaseMatch = await getAccommodationById(
-              specificCase.accommodationCases[0].accommodationId
-            );
-            if (
-              accommodationCaseMatch &&
-              accommodationCaseMatch.accommodationHost === address
-            ) {
-              setLoading(false);
-              alreadyLodgeACasePopUp();
-              return;
-            }
+          const accommodationCaseMatch = await getAccommodationById(
+            specificCase.accommodationCases[0].accommodationId
+          );
+          if (
+            accommodationCaseMatch &&
+            accommodationCaseMatch.accommodationHost === address
+          ) {
+            setLoading(false);
+            alreadyLodgeACasePopUp();
+            return;
           }
         } else {
           if (specificCase.userCases.length > 0) {
@@ -304,6 +304,17 @@ const OrderList: React.FC<OrderListProps> = ({
     }, 1000);
   };
 
+  const noAccommodationCasePopUp = () => {
+    setLoading(false);
+    setTimeout(() => {
+      normalModal(
+        "error",
+        "Oops...",
+        "You cannot lodge a case because there are no accommodation-related cases associated with this booking."
+      );
+    }, 1000);
+  };
+
   useEffect(() => {
     const fetchCaseStatuses = async () => {
       const newCaseStatuses = new Map<string, string>();
@@ -328,7 +339,9 @@ const OrderList: React.FC<OrderListProps> = ({
     <div className="px-4 md:px-12">
       <div className="mb-8">
         <h1 className="text-3xl font-semibold text-darkOrange">
-          {accommodation!.accommodationName} Order List
+          {
+            accommodation != null && `${accommodation!.accommodationName} Order List`
+          }
         </h1>
       </div>
       {bookingsHistory.length > 0 ? (
@@ -402,14 +415,13 @@ const OrderList: React.FC<OrderListProps> = ({
                     </td>
                     <td className="px-6 py-4">{order.durationInDays}</td>
                     <td className="px-6 py-4">
-                      {`${
-                        order.checkOut !== 0
-                          ? `${format(
-                              new Date(order.bookingTimestamp * 1000),
-                              "EEEE, dd MMMM yyyy"
-                            )}`
-                          : `-`
-                      }`}
+                      {`${order.checkOut !== 0
+                        ? `${format(
+                          new Date(order.bookingTimestamp * 1000),
+                          "EEEE, dd MMMM yyyy"
+                        )}`
+                        : `-`
+                        }`}
                     </td>
                     <td className="px-6 py-4">{order.roomType}</td>
                     <td className="px-6 py-4">{order.tokenId}</td>
@@ -441,11 +453,10 @@ const OrderList: React.FC<OrderListProps> = ({
                           withdraw(order.id, order.tokenId);
                         }
                       }}
-                      className={`px-6 py-4 hover:underline cursor-pointer ${
-                        !order.alreadyCheckOut
-                          ? "text-gray-400"
-                          : "text-complementary"
-                      }`}
+                      className={`px-6 py-4 hover:underline cursor-pointer ${!order.alreadyCheckOut
+                        ? "text-gray-400"
+                        : "text-complementary"
+                        }`}
                     >
                       {order.alreadyCheckOut
                         ? "Withdraw"

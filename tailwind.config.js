@@ -41,6 +41,15 @@ module.exports = {
         84: "21rem",
         96: "24rem",
       },
+      animation: {
+        blink: "blink 1.5s infinite",
+      },
+      keyframes: {
+        blink: {
+          "0%, 100%": { opacity: 0.2 },
+          "50%": { opacity: 1 },
+        },
+      }
     },
   },
   plugins: [addVariablesForColors,

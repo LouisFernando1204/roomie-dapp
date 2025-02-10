@@ -165,16 +165,11 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     try {
       const caseData = await getCaseByBookingId(bookingId);
       if (caseData) {
-        setLoading(false);
         setOldCaseName(caseData.name);
-        setShowCaseModal(true);
-      } else {
-        setLoading(false);
-        setShowCaseModal(true);
       }
+      setShowCaseModal(true);
     } catch (error) {
       console.error(error);
-      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -184,20 +179,25 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     setLoading(true);
     try {
       const specificCase = await getCaseByBookingId(booking.id);
-      if (specificCase != null) {
+      if (specificCase) {
+        if (accommodation == null) {
+          if (specificCase.accommodationCases.length === 0) {
+            setLoading(false);
+            noAccommodationCasePopUp();
+            return;
+          }
+        }
         if (accommodation != null) {
-          if (specificCase.accommodationCases.length > 0) {
-            const accommodationCaseMatch = await getAccommodationById(
-              specificCase.accommodationCases[0].accommodationId
-            );
-            if (
-              accommodationCaseMatch &&
-              accommodationCaseMatch.accommodationHost === address
-            ) {
-              setLoading(false);
-              alreadyLodgeACasePopUp();
-              return;
-            }
+          const accommodationCaseMatch = await getAccommodationById(
+            specificCase.accommodationCases[0].accommodationId
+          );
+          if (
+            accommodationCaseMatch &&
+            accommodationCaseMatch.accommodationHost === address
+          ) {
+            setLoading(false);
+            alreadyLodgeACasePopUp();
+            return;
           }
         } else {
           if (specificCase.userCases.length > 0) {
@@ -379,6 +379,17 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
     }, 1000);
   };
 
+  const noAccommodationCasePopUp = () => {
+    setLoading(false);
+    setTimeout(() => {
+      normalModal(
+        "error",
+        "Oops...",
+        "You cannot lodge a case because there are no accommodation-related cases associated with this booking."
+      );
+    }, 1000);
+  };
+
   useEffect(() => {
     fetchBookings();
   }, [update]);
@@ -529,11 +540,10 @@ const HistoryPage: React.FC<HistoryPageProps> = ({
                       <button
                         key={star}
                         onClick={() => setSelectedRating(star)}
-                        className={`text-4xl lg:text-6xl my-8 ${
-                          selectedRating >= star
-                            ? "text-yellow-500"
-                            : "text-gray-300"
-                        }`}
+                        className={`text-4xl lg:text-6xl my-8 ${selectedRating >= star
+                          ? "text-yellow-500"
+                          : "text-gray-300"
+                          }`}
                       >
                         ★
                       </button>

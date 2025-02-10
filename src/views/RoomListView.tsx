@@ -158,7 +158,7 @@ const RoomList: React.FC<RoomListProps> = ({
       </button>
 
       {rooms.length > 0 ? (
-        <div className="mb-8 relative overflow-x-auto shadow-md sm:rounded-lg bg-brightYellow">
+        <div className="mb-8 relative overflow-x-auto sm:rounded-lg">
           <table className="w-full text-sm text-left rtl:text-right text-darkOrange">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
               <tr>
@@ -245,7 +245,7 @@ const RoomList: React.FC<RoomListProps> = ({
           </table>
         </div>
       ) : (
-        <div className="mb-8 relative overflow-x-auto shadow-md sm:rounded-lg bg-brightYellow">
+        <div className="mb-8 relative overflow-x-auto sm:rounded-lg">
           <EmptyPage
             title="Uh-oh! No rooms yet!"
             text="Looks like you haven't added any rooms. Why not create one and get started?"

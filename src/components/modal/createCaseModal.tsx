@@ -201,7 +201,7 @@ export const CreateCaseModal: React.FC<CreateCaseModalProps> = ({
           <div className="relative rounded-lg w-full sm:w-3/4 lg:w-5/12 bg-white shadow">
             <div className="flex items-center justify-between rounded-t border-b border-gray-200 p-4 md:p-5">
               <h3 className="text-lg font-semibold text-gray-900">
-                Lodge New Case
+                File New Case
               </h3>
               <button
                 onClick={() => {

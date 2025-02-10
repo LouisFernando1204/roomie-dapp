@@ -118,7 +118,7 @@ export const CreateRoomModal: React.FC<CreateRoomModalProps> = ({
   const uploadedNftHash = async () => {
     try {
       const upload = await pinata.upload.url(nft);
-      return `${upload.IpfsHash}`;
+      return `https://gateway.pinata.cloud/ipfs/${upload.IpfsHash}`;
     } catch (error) {
       console.log(error);
     }
