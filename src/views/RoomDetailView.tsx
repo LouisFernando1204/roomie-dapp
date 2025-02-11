@@ -11,12 +11,15 @@ import {
   Star,
   UserRound,
   Wallet,
+  LayoutGrid
 } from "lucide-react";
 import { getAccommodations } from "../server/accommodation";
 import { Accommodation } from "../model/accommodation";
 import { normalModal, successModal } from "../utils/helper";
 import { createBooking, deleteBooking } from "../server/booking";
 import { reserve } from "../services/customer";
+import { tokenDetail } from "../services/public";
+import { getAccommodationRating } from "../server/rating";
 
 interface RoomDetailProps {
   walletProvider: any;
@@ -30,6 +33,8 @@ const RoomDetail: React.FC<RoomDetailProps> = ({ walletProvider, address }) => {
   const [loading, setLoading] = useState(false);
   const [room, setRoom] = useState<Room>();
   const [accommodation, setAccommodation] = useState<Accommodation>();
+  const [totalRating, setTotalRating] = useState(0);
+  const [nftSlot, setNftSlot] = useState(0);
 
   const { id } = useParams();
 
@@ -144,11 +149,41 @@ const RoomDetail: React.FC<RoomDetailProps> = ({ walletProvider, address }) => {
     }
   };
 
+  const getTokenDetail = async() => {
+    try {
+      const nftSlot = await tokenDetail(room!.tokenId);
+
+      if (nftSlot) {
+        setNftSlot(nftSlot.tokenSupply);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getRating = async() => {
+    try {
+      const totalRating = await getAccommodationRating(accommodation!.id);
+      if(totalRating){
+        setTotalRating(totalRating);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (id) {
       fetchRoom();
     }
   }, [id]);
+
+  useEffect(() => {
+    if (room && room.tokenId) {
+      getTokenDetail();
+      getRating();
+    }
+  }, [room]);
 
   if (loading || !room || !accommodation) {
     return <LoadingScreen />;
@@ -181,7 +216,7 @@ const RoomDetail: React.FC<RoomDetailProps> = ({ walletProvider, address }) => {
 
       <div className="bg-secondary border border-darkOrange p-4 rounded-xl">
         <h2 className="text-2xl font-bold mb-4">About This Room</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
           <div className="flex items-center space-x-2">
             <DoorOpen size={32} color="orange" />
             <span className="text-gray-700 text-lg">{room.roomType}</span>
@@ -197,7 +232,11 @@ const RoomDetail: React.FC<RoomDetailProps> = ({ walletProvider, address }) => {
             </span>
           </div>
           <div className="flex items-center space-x-2">
-            <Star size={32} color="orange" />
+          <Star size={32} color="orange" />
+          <span className="text-gray-700 text-lg">{totalRating}</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <LayoutGrid size={32} color="orange" />
             <span className="text-gray-700">{room.facilities.join(",")}</span>
           </div>
         </div>
@@ -257,6 +296,12 @@ const RoomDetail: React.FC<RoomDetailProps> = ({ walletProvider, address }) => {
               onChange={handleCheckOutChange}
               className="p-3 border rounded-lg bg-transparent w-full focus:ring-2 focus:ring-darkOrange focus:outline-none"
             />
+          </div>
+
+          <div className="flex flex-col">
+            <label className="text-sm font-semibold text-darkOrange mb-1">
+              NFT Slot: {nftSlot}
+            </label>
           </div>
         </div>
 

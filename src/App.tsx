@@ -5,7 +5,7 @@ import {
   useAppKitProvider,
 } from "@reown/appkit/react";
 import { EthersAdapter } from "@reown/appkit-adapter-ethers";
-import { AppKitNetwork, holesky } from "@reown/appkit/networks";
+import { AppKitNetwork, mantaSepoliaTestnet } from "@reown/appkit/networks";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Footer } from "./components/fixed/Footer";
@@ -28,7 +28,7 @@ import Navbar from "./components/fixed/Navbar";
 
 const projectId = import.meta.env.VITE_PROJECT_ID;
 
-const networks: [AppKitNetwork] = [holesky];
+const networks: [AppKitNetwork] = [mantaSepoliaTestnet];
 
 const metadata = {
   name: "Roomie",
@@ -98,7 +98,8 @@ function App() {
 
   useEffect(() => {
     console.log(accommodation);
-  }, [accommodation]);
+    console.log(address)
+  }, [accommodation, address]);
 
   if (loading) {
     return <LoadingScreen />;

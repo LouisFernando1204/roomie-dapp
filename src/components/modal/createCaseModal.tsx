@@ -46,7 +46,7 @@ export const CreateCaseModal: React.FC<CreateCaseModalProps> = ({
   };
 
   const checkCaseInput = () => {
-    if (caseName == "" || caseArgument == "" || caseEvidence.length == 0) {
+    if (caseArgument == "" || caseEvidence.length == 0) {
       normalModal(
         "error",
         "Oops..",
